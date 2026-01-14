@@ -1,0 +1,163 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{imfellEnglish}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{geometry}
+\usepackage{siunitx}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage[italic, basic]{mathastext}
+\usepackage{caption}
+\usetikzlibrary{babel, tikzmark}
+
+\geometry{margin=1.5cm}
+
+\begin{document}
+\itshape
+
+\begin{tcolorbox}[
+    enhanced,
+    colback=white,
+    colframe=black,
+    arc=0pt,
+    outer arc=0pt,
+    boxrule=0.5mm
+]
+
+Una barra de longitud $L$ se encuentra en dirección perpendicular a una carga lineal uniforme e infinitamente larga de densidad de carga $\lambda$ $\frac{\unit{C}}{\unit{m}}$.
+
+El extremo más próximo de la barra a la carga lineal dista de esta la longitud $d$.
+
+La barra posee una carga total $\mathrm{Q}$ distribuida uniformemente en toda su longitud.
+
+Determinar la fuerza que la carga lineal ejerce sobre la barra.
+
+\vspace{0.5cm}
+
+\begin{center}
+    \begin{tikzpicture}[scale=1.2]
+        % Parameters
+        \def\d{2.0} % Distance to bar
+        \def\L{3.0} % Length of bar
+        \def\w{0.3} % Width of bar drawing
+        
+        % Infinite Line Charge (x-axis)
+        \draw[thick, blue] (-2.5, 0) -- (2.5, 0);
+        \draw[dashed, blue] (2.5, 0) -- (3.0, 0);
+        \draw[dashed, blue] (-3.0, 0) -- (-2.5, 0);
+        
+        % Positive charges on the line
+        \foreach \x in {-2.2, -1.8, ..., 2.2} {
+            \node[blue, font=\tiny] at (\x, 0) {$+$};
+        }
+        \node[blue, above] at (2, 0) {$\lambda$};
+
+        % The Bar (on y-axis)
+        \draw[fill=gray!20, thick] (-\w/2, \d) rectangle (\w/2, \d+\L);
+        \node[right] at (\w/2, \d+\L/2) {$\mathrm{Q}$};
+        
+        % Dimension lines
+        \draw[<->] (-1.0, 0) -- (-1.0, \d) node[midway, left] {$d$};
+        \draw[<->] (-1.0, \d) -- (-1.0, \d+\L) node[midway, left] {$L$};
+        
+        % Helper lines for dimensions
+        \draw[dotted] (-\w/2, \d) -- (-1.2, \d);
+        \draw[dotted] (-\w/2, \d+\L) -- (-1.2, \d+\L);
+        \draw[dotted] (-2.5, 0) -- (-1.0, 0);
+
+    \end{tikzpicture}
+\end{center}
+\end{tcolorbox}
+
+\vspace{0.5cm}
+
+\begin{tcolorbox}[
+    enhanced,
+    frame hidden,
+    colback=gray!15,
+    arc=0pt,
+    outer arc=0pt,
+    left=0.5cm,
+    overlay={
+        \node[rotate=90, anchor=south, font=\fontsize{8}{10}\selectfont\itshape, opacity=0.8] at ([xshift=-0.2cm]frame.west) {Planteamiento};
+    }
+]
+
+La ley de Gauss relaciona el flujo eléctrico que atraviesa una superficie cualquiera cerrada $S$ con la carga encerrada por la misma:
+
+\begin{equation*}
+    \oint_S \vec{E} \cdot d\vec{S} = \frac{\mathrm{Q}_{\text{enc}}}{\varepsilon_0}
+\end{equation*}
+
+Por otro lado, la fuerza se relaciona con el campo eléctrico como:
+
+\begin{equation*}
+    d\vec{F} = \vec{E} \, dq
+\end{equation*}
+
+\end{tcolorbox}
+
+
+\section*{Solución}
+
+Primero se calcula el campo eléctrico generado por el hilo infinito de la siguiente manera:
+
+Como la línea cargada se encuentra sobre el eje $X$, por simetría el campo eléctrico será radial y dependerá únicamente de la distancia a la línea. Aplicando la Ley de Gauss a una superficie cilíndrica de radio $r$ y longitud $L'$ coaxal con la línea:
+
+\begin{align*}
+    \oint_S \vec{E} \cdot d\vec{S} &= \int_{\text{lat}} \vec{E} \cdot d\vec{S} + \int_{\text{tapas}} \vec{E} \cdot d\vec{S} = E (2\pi r L') + 0 \\[10pt]
+    \mathrm{Q}_{\text{enc}} &= \lambda L'
+\end{align*}
+
+Igualamos:
+
+\begin{equation*}
+    E (2\pi r L') = \frac{\lambda L'}{\varepsilon_0} \implies E = \frac{\lambda}{2\pi \varepsilon_0 r}
+\end{equation*}
+
+Vectorialmente:
+
+\begin{equation*}
+    \vec{E} = \frac{\lambda}{2\pi \varepsilon_0 y} \, \vec{j} \quad \left[\frac{\unit{N}}{\unit{C}}\right]
+\end{equation*}
+
+Por otro lado, calculamos la fuerza como:
+
+\begin{equation*}
+    \vec{F} = \int d\vec{F}
+\end{equation*}
+
+Donde:
+
+\begin{equation*}
+    d\vec{F} = \vec{E} \, dq
+\end{equation*}
+
+Y:
+
+\begin{tcolorbox}[
+    enhanced,
+    frame hidden,
+    interior hidden,
+    sidebyside,
+    sidebyside align=center,
+    lefthand width=0.7\textwidth,
+    segmentation style={red!50, dashed, thick}
+]
+
+\begin{equation*}
+    dq = \colorbox{orange!20}{$\displaystyle \frac{\mathrm{Q}}{L}$} \, dy
+\end{equation*}
+
+\tcblower
+
+\noindent distribución lineal del segmento vertical finito
+
+\end{tcolorbox}
+
+
+
+\end{document}
