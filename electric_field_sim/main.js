@@ -18,7 +18,7 @@ document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
-controls.autoRotate = false; // Stopped rotation as requested
+controls.autoRotate = false; // Stopped rotation
 
 // Lighting
 const ambientLight = new THREE.AmbientLight(0x404040);
@@ -84,35 +84,30 @@ function getField(pos) {
 
 // --- Vector Field Visualization (Random Points) ---
 
-// Geometry: Tapered cone pointing towards +Z (after rotation fix)
+// Geometry: Tapered cone pointing towards +Z 
 const coneGeo = new THREE.CylinderGeometry(0.01, 0.1, 0.4, 6);
-// Align so +Z is the forward direction (Tip)
-// Cylinder is Y-up. Top (0.01) is +Y. Bottom (0.1) is -Y.
-// Rotate +Y to +Z -> rotateX(PI/2)
 coneGeo.rotateX(Math.PI / 2);
 
-const coneMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.8 });
+const coneMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true }); // Opacity controlled by instance color
 
 const mesh = new THREE.InstancedMesh(coneGeo, coneMaterial, PARTICLE_COUNT);
 mesh.instanceMatrix.setUsage(THREE.StaticDrawUsage);
 
 const dummy = new THREE.Object3D();
 const posVector = new THREE.Vector3();
+const color = new THREE.Color();
 
 for (let i = 0; i < PARTICLE_COUNT; i++) {
     // 1. Random Position
     let valid = false;
     let attempts = 0;
     while (!valid && attempts < 10) {
-        // Uniform random distribution in box or sphere?
-        // Box is easier to fill screen.
         posVector.set(
             (Math.random() - 0.5) * BOUNDS * 2,
-            (Math.random() - 0.5) * BOUNDS * 1.5, // Flatten slightly in Y
+            (Math.random() - 0.5) * BOUNDS * 1.5,
             (Math.random() - 0.5) * BOUNDS * 1.5
         );
 
-        // Avoid being inside charges
         if (posVector.distanceTo(posCharge.position) > 2.2 &&
             posVector.distanceTo(negCharge.position) > 2.2) {
             valid = true;
@@ -123,25 +118,35 @@ for (let i = 0; i < PARTICLE_COUNT; i++) {
     if (valid) {
         dummy.position.copy(posVector);
 
-        // 2. Calculate Field Direction
+        // 2. Calculate Field
         const E = getField(posVector);
+        const mag = E.length();
         const dir = E.clone().normalize();
 
         // 3. Orient
-        // Use lookAt to point +Z (Tip) towards 'pos + dir'
         const target = posVector.clone().add(dir);
         dummy.lookAt(target);
-
         dummy.updateMatrix();
         mesh.setMatrixAt(i, dummy.matrix);
+
+        // 4. Intensity Scaling
+        // Map Magnitude to Brightness
+        // High magnitude -> Bright White
+        // Low magnitude -> Dim Grey
+        const sensitivity = 0.5;
+        const brightness = Math.min(1.0, 0.1 + mag * sensitivity);
+
+        color.setHSL(0, 0, brightness);
+        mesh.setColorAt(i, color);
+
     } else {
-        // Hide unused
         dummy.scale.set(0, 0, 0);
         dummy.updateMatrix();
         mesh.setMatrixAt(i, dummy.matrix);
     }
 }
 
+mesh.instanceColor.needsUpdate = true;
 scene.add(mesh);
 
 // --- Animation Loop ---
