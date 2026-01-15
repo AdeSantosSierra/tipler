@@ -1,28 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Electric Field Particle Simulation</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div id="info">
         <h3>Electric Field Simulation</h3>
         <p>Red: Positive Charge | Blue: Negative Charge (if added)</p>
         <p>Particles move along field lines.</p>
     </div>
-    
+
     <!-- Import Map to handle module resolution -->
     <script type="importmap">
         {
             "imports": {
                 "three": "./libs/three.module.js",
-                "three/addons/controls/OrbitControls.js": "./libs/OrbitControls.js"
+                "three/addons/controls/OrbitControls.js": "./libs/OrbitControls.js",
+                "three/addons/objects/MarchingCubes.js": "./libs/MarchingCubes.js"
             }
         }
     </script>
 
     <script type="module" src="main.js"></script>
 </body>
+
 </html>

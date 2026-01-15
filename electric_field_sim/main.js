@@ -1,24 +1,26 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { MarchingCubes } from 'three/addons/objects/MarchingCubes.js';
 
 // Configuration
-const PARTICLE_COUNT = 5000; // Dense field
-const BOUNDS = 25; // Area to fill
+const BOUNDS = 20;
+const RESOLUTION = 60; // Grid resolution for Marching Cubes
 
 // Scene Setup
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x050505);
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 0, 20);
+camera.position.set(0, 0, 25);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setScissorTest(false);
 document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
-controls.autoRotate = false; // Stopped rotation
+controls.autoRotate = false;
 
 // Lighting
 const ambientLight = new THREE.AmbientLight(0x404040);
@@ -60,94 +62,108 @@ const k = 100;
 const q1 = 1;
 const q2 = -1;
 
-function getField(pos) {
-    const E = new THREE.Vector3(0, 0, 0);
+// --- Scalar Potential Field Calculations ---
+// V = k*q/r
+function getPotential(x, y, z) {
+    const pos = new THREE.Vector3(x, y, z);
 
-    // Positive Charge Contribution
-    const r1 = new THREE.Vector3().subVectors(pos, posCharge.position);
-    const d1Sq = r1.lengthSq();
-    if (d1Sq > 0.1) {
-        const mag1 = (k * q1) / (d1Sq * Math.sqrt(d1Sq));
-        E.addScaledVector(r1, mag1);
-    }
+    // Pot from q1 (+)
+    const r1 = pos.distanceTo(posCharge.position);
+    const v1 = (r1 > 0.5) ? (k * q1) / r1 : 1000; // avoid singularity
 
-    // Negative Charge Contribution
-    const r2 = new THREE.Vector3().subVectors(pos, negCharge.position);
-    const d2Sq = r2.lengthSq();
-    if (d2Sq > 0.1) {
-        const mag2 = (k * q2) / (d2Sq * Math.sqrt(d2Sq));
-        E.addScaledVector(r2, mag2);
-    }
+    // Pot from q2 (-)
+    const r2 = pos.distanceTo(negCharge.position);
+    const v2 = (r2 > 0.5) ? (k * q2) / r2 : -1000;
 
-    return E;
+    return v1 + v2;
 }
 
-// --- Vector Field Visualization (Random Points) ---
+// --- Equipotential Surfaces (Layers) ---
 
-// Geometry: Tapered cone pointing towards +Z 
-const coneGeo = new THREE.CylinderGeometry(0.01, 0.1, 0.4, 6);
-coneGeo.rotateX(Math.PI / 2);
+// Helper to generate a single isosurface layer
+function createIsoSurface(level, color, side = THREE.FrontSide) {
+    const material = new THREE.MeshPhysicalMaterial({
+        color: color,
+        transparent: true,
+        opacity: 0.3, // Glassy layers
+        roughness: 0.1,
+        metalness: 0.1,
+        clearcoat: 1.0,
+        side: THREE.DoubleSide, // See inside/outside
+        depthWrite: false // For transparency handling
+    });
 
-const coneMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true }); // Opacity controlled by instance color
+    const mc = new MarchingCubes(RESOLUTION, material, true, true, 100000);
+    mc.position.set(0, 0, 0);
+    mc.scale.set(BOUNDS, BOUNDS, BOUNDS); // Map 0..1 to -BOUNDS..BOUNDS? 
+    // Wait, MarchingCubes grid bounds:
+    // It creates a box from -scale to +scale? No, usually normalized.
+    // Let's check docs logic usually:
+    // It fills a volume. We need to map world coordinates to [0,1] grid coordinates.
+    // Or rather, we sample the world at the grid points.
 
-const mesh = new THREE.InstancedMesh(coneGeo, coneMaterial, PARTICLE_COUNT);
-mesh.instanceMatrix.setUsage(THREE.StaticDrawUsage);
+    // Populate
+    const tempVec = new THREE.Vector3();
 
-const dummy = new THREE.Object3D();
-const posVector = new THREE.Vector3();
-const color = new THREE.Color();
+    // MarchingCubes uses a flat float32 array 'field'
+    // Iterate X, Y, Z
+    // Local coords -1 to 1 based on mc.position/scale
 
-for (let i = 0; i < PARTICLE_COUNT; i++) {
-    // 1. Random Position
-    let valid = false;
-    let attempts = 0;
-    while (!valid && attempts < 10) {
-        posVector.set(
-            (Math.random() - 0.5) * BOUNDS * 2,
-            (Math.random() - 0.5) * BOUNDS * 1.5,
-            (Math.random() - 0.5) * BOUNDS * 1.5
-        );
+    // Actually simpler: reset() clears track.
+    // We manually set values via setCell? Or direct array access?
+    // Accessing `mc.field[i]` is fastest.
 
-        if (posVector.distanceTo(posCharge.position) > 2.2 &&
-            posVector.distanceTo(negCharge.position) > 2.2) {
-            valid = true;
+    // To position it correctly:
+    // MC centered at 0, scaled by BOUNDS means it covers [-BOUNDS/2, BOUNDS/2]?
+    // Let's assume scale=1 means [-1,1].
+    // If we want to cover [-20, 20], we set scale to 20? 
+    // Let's keep scale at 15 (radius) = 30 width?
+    // We set mc.scale.set(15, 15, 15).
+
+    mc.scale.set(15, 15, 15);
+    mc.enableUvs = false;
+    mc.enableColors = false;
+
+    // Fill the field
+    // Grid goes from 0 to RESOLUTION-1
+    let iter = 0;
+    for (let k = 0; k < RESOLUTION; k++) {
+        for (let j = 0; j < RESOLUTION; j++) {
+            for (let i = 0; i < RESOLUTION; i++) {
+                // Determine World Position of this grid point
+                // x goes from -15 to 15
+                const x = (i / (RESOLUTION - 1) - 0.5) * 2 * 15;
+                const y = (j / (RESOLUTION - 1) - 0.5) * 2 * 15;
+                const z = (k / (RESOLUTION - 1) - 0.5) * 2 * 15;
+
+                const val = getPotential(x, y, z);
+
+                mc.field[iter] = val;
+                iter++;
+            }
         }
-        attempts++;
     }
 
-    if (valid) {
-        dummy.position.copy(posVector);
+    mc.isolation = level;
+    mc.update(); // Generate geometry
 
-        // 2. Calculate Field
-        const E = getField(posVector);
-        const mag = E.length();
-        const dir = E.clone().normalize();
-
-        // 3. Orient
-        const target = posVector.clone().add(dir);
-        dummy.lookAt(target);
-        dummy.updateMatrix();
-        mesh.setMatrixAt(i, dummy.matrix);
-
-        // 4. Intensity Scaling
-        // Map Magnitude to Brightness
-        // High magnitude -> Bright White
-        // Low magnitude -> Dim Grey
-        const sensitivity = 0.5;
-        const brightness = Math.min(1.0, 0.1 + mag * sensitivity);
-
-        color.setHSL(0, 0, brightness);
-        mesh.setColorAt(i, color);
-
-    } else {
-        dummy.scale.set(0, 0, 0);
-        dummy.updateMatrix();
-        mesh.setMatrixAt(i, dummy.matrix);
-    }
+    scene.add(mc);
+    return mc;
 }
 
-mesh.instanceColor.needsUpdate = true;
-scene.add(mesh);
+// Create Layers
+// Positive (Reddish)
+createIsoSurface(5, 0xff5555);
+createIsoSurface(10, 0xff2222);
+createIsoSurface(20, 0xff0000);
+
+// Negative (Greenish - matching the charge)
+createIsoSurface(-5, 0x55ffaa);
+createIsoSurface(-10, 0x22ff88);
+createIsoSurface(-20, 0x00ff66);
+
+// V=0 Plane (optional, usually infinite plane, might clip messy)
+// createIsoSurface(0, 0xffffff);
 
 // --- Animation Loop ---
 function animate() {
