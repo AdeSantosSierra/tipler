@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // Configuration
-const PARTICLE_COUNT = 500;
+const PARTICLE_COUNT = 1500; // Increased density
 const BOUNDS = 20;
 const CHARGE_STRENGTH = 100; // kQ
 const PARTICLE_CHARGE = 1;
@@ -25,49 +25,97 @@ controls.enableDamping = true;
 // Lighting
 const ambientLight = new THREE.AmbientLight(0x404040);
 scene.add(ambientLight);
-const pointLight = new THREE.PointLight(0xffffff, 1);
-pointLight.position.set(0, 0, 0); // Light emanating from center
+const pointLight = new THREE.PointLight(0xffffff, 2); // Brighter light for glass effect
+pointLight.position.set(5, 5, 5); // Offset light to show sphericity better
 scene.add(pointLight);
+const pointLight2 = new THREE.PointLight(0xffffff, 1);
+pointLight2.position.set(-5, -5, -5);
+scene.add(pointLight2);
 
-// Central Charge - Semi-translucent
-const chargeGeometry = new THREE.SphereGeometry(2, 32, 32); // Slightly larger
-const chargeMaterial = new THREE.MeshPhongMaterial({
-    color: 0xffffff, // White
-    emissive: 0x222222,
-    transparent: true,
-    opacity: 0.3,
-    shininess: 100,
-    side: THREE.DoubleSide
+// Central Charge - Elegant Translucent Green
+const chargeGeometry = new THREE.SphereGeometry(2, 64, 64);
+const chargeMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0x88ffaa, // Light Green
+    emissive: 0x002211,
+    roughness: 0.1,
+    metalness: 0.1,
+    transmission: 0.6, // Glass-like transparency
+    thickness: 2.0,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.1,
+    side: THREE.FrontSide
 });
 const centralCharge = new THREE.Mesh(chargeGeometry, chargeMaterial);
 scene.add(centralCharge);
 
 // Particles System (InstancedMesh with Cylinders for lines)
-// Cylinder aligned with Y axis by default. We will rotate it to match field.
 const lineLength = 0.6;
 // Tapered cylinder: radiusTop=0.0 (point), radiusBottom=0.03
-// This creates a cone pointing towards the +Y direction (before rotation)
-// After rotateX(PI/2), it points towards +Z
-// When we lookAt(center), +Z points to center. So the tip points to center.
 const geometry = new THREE.CylinderGeometry(0.005, 0.04, lineLength, 6);
-// User feedback: Lines were not pointing to center.
-// Previous: rotateX(PI/2) -> Tip(+Y) to +Z.
-// If user saw them pointing away, then +Z must be pointing away or visual confusion.
-// Tried flipping to -PI/2 -> Tip(+Y) to -Z.
-// If +Z points to center, then -Z (Tip) points AWAY.
-// Wait, if I want to FLIP the previous behavior, I should change the rotation to -PI/2?
-// Let's assume previous was "Backwards". So I flip it.
-geometry.rotateX(-Math.PI / 2);
+geometry.rotateX(-Math.PI / 2); // Point towards -Z (Tip)
 
+// Custom Shader Material for "Blink/Flow" effect
 const material = new THREE.MeshBasicMaterial({
     color: 0xffffff,
     transparent: true,
-    opacity: 0.9, // Increased opacity for visibility
+    opacity: 0.9,
     blending: THREE.AdditiveBlending,
-    depthWrite: false // Keep false for additive blending sort-free rendering
+    depthWrite: false,
+    side: THREE.DoubleSide
 });
+
+// Inject shader logic
+const uniforms = {
+    uTime: { value: 0 }
+};
+
+material.onBeforeCompile = (shader) => {
+    shader.uniforms.uTime = uniforms.uTime;
+
+    shader.vertexShader = `
+        varying vec2 vUv;
+        ${shader.vertexShader}
+    `.replace(
+        '#include <uv_vertex>',
+        `
+        #include <uv_vertex>
+        vUv = uv;
+        `
+    );
+
+    shader.fragmentShader = `
+        uniform float uTime;
+        varying vec2 vUv;
+        ${shader.fragmentShader}
+    `.replace(
+        '#include <color_fragment>',
+        `
+        #include <color_fragment>
+        
+        // Flow effect: "Back to Front"
+        // vUv.y goes 0 (bottom/base) to 1 (top/tip).
+        // To move Base -> Tip, we want phase to travel 0 -> 1.
+        
+        float speed = 3.0;
+        // Direction: Base(0) -> Tip(1). 
+        // We want the pulse to appear at 0 when time=0, then move to 1.
+        
+        float progress = fract(uTime * 0.5); // 0 to 1 over time
+        float wavePos = progress * 2.0 - 0.5; // range: -0.5 to 1.5 to cover full length
+        
+        // Distance from wave center
+        float dist = abs(vUv.y - wavePos);
+        float glow = 1.0 - smoothstep(0.0, 0.4, dist);
+        
+        // Modulate alpha
+        diffuseColor.a *= (0.2 + 0.8 * glow);
+        `
+    );
+};
+
 const particlesMesh = new THREE.InstancedMesh(geometry, material, PARTICLE_COUNT);
 particlesMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+
 // Initialize colors
 const colors = new Float32Array(PARTICLE_COUNT * 3);
 for (let i = 0; i < PARTICLE_COUNT; i++) {
@@ -85,16 +133,10 @@ const color = new THREE.Color();
 const center = new THREE.Vector3(0, 0, 0);
 
 function initFieldLine(i) {
-    // Spawn randomly within bounds
-    // Use a distribution that ensures lines are visible at various depths
-    // Volume distribution: r = cbrt(random) * R for uniform sphere volume, 
-    // but we might want 1/r^2 density or uniform linear distribution.
-    // Let's stick to uniform volume for now to fill the space.
     const r = Math.pow(Math.random(), 1 / 3) * BOUNDS;
 
-    // Ensure we don't spawn inside the charge
     if (r < 2.5) {
-        initFieldLine(i); // Retry
+        initFieldLine(i);
         return;
     }
 
@@ -123,7 +165,6 @@ function updateFieldLines() {
         const dist = dummy.position.distanceTo(center);
 
         // 2. Orientation
-        // Point TOWARDS the center (Converging field)
         dummy.lookAt(center);
 
         // 3. Brightness/Intensity based on distance
@@ -141,11 +182,20 @@ function updateFieldLines() {
 
 updateFieldLines();
 
+// Auto-rotation
+controls.autoRotate = true;
+controls.autoRotateSpeed = 2.0;
+
 // Animation Loop
+const clock = new THREE.Clock();
+
 function animate() {
     requestAnimationFrame(animate);
 
-    controls.update();
+    const time = clock.getElapsedTime();
+    uniforms.uTime.value = time;
+
+    controls.update(); // Handles auto-rotate
     renderer.render(scene, camera);
 }
 
