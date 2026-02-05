@@ -78,9 +78,9 @@ const math = {
     step1_Lp_tooltip_text: String.raw`Esta longitud es diferente a la longitud de la barra, que es $L$. No se tienen que confundir.`,
     step4_final_eq: String.raw`
         \begin{align*}
-        \vec{F} &= \left( \frac{Q\lambda}{2\pi \varepsilon_0 L} \right) \ln\left( \frac{d+L}{d} \right) \vec{\jmath}
+        \vec{F} &= \left( \frac{Q\lambda}{2\pi \varepsilon_0 L} \right) \ln\left( \frac{d+L}{d} \right) \vec{\jmath} \quad [\mathrm{N}]
         \end{align*}`,
-    step4_parallel_eq: String.raw`$$ \vec{F}_{\parallel} = Q \cdot \vec{E} = \frac{Q\lambda}{2\pi \varepsilon_0 d} \hat{\imath} $$`,
+    step4_parallel_eq: String.raw`$$ \vec{F}_{\parallel} = Q \cdot \vec{E} = \frac{Q\lambda}{2\pi \varepsilon_0 d} \vec{\jmath} $$`,
     step4_vec_E_inline: String.raw`$\vec{E}$`
 };
 ---
@@ -219,13 +219,10 @@ const math = {
             </StepBox>
 
             <!-- Step 4: Conclusions -->
-            <StepBox label="Resultado final y conclusiones" vizSrc="step3_interactive.html" vizId="viz-step-4">
+            <StepBox label="Resultado final y conclusiones">
                 <div class="step-content">
-                    <div class="step-text-col text-yellow-theme">
-                        <p>Resultado:</p>
-                    </div>
                     <div class="step-math-col">
-                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step4_final_eq} />
+                        <div style="font-size: 1.1em; overflow-x: auto; text-align: center;" set:html={math.step4_final_eq} />
                     </div>
                 </div>
 
