@@ -57,7 +57,6 @@ const math = {
         \end{align*}`,
     step3_dF_vec: String.raw`\(d\vec{F}\)`,
     step3_dF_eq: String.raw`
-
         \begin{align*}
         d\vec{F} = \vec{E} dq &= \left( \frac{\lambda}{2\pi \varepsilon_0 y} \vec{\jmath} \right) \left( \frac{Q}{L} dy \right) \\
               &= \left( \frac{Q\lambda}{2\pi \varepsilon_0 L} \right) \frac{dy}{y} \vec{\jmath}
@@ -76,7 +75,13 @@ const math = {
     step3_lim_lower: String.raw`\(y=d\)`,
     step3_lim_upper: String.raw`\(y=d+L\)`,
     step3_y0: String.raw`\(y=0\)`,
-    step1_Lp_tooltip_text: String.raw`Esta longitud es diferente a la longitud de la barra, que es $L$. No se tienen que confundir.`
+    step1_Lp_tooltip_text: String.raw`Esta longitud es diferente a la longitud de la barra, que es $L$. No se tienen que confundir.`,
+    step4_final_eq: String.raw`
+        \begin{align*}
+        \vec{F} &= \left( \frac{Q\lambda}{2\pi \varepsilon_0 L} \right) \ln\left( \frac{d+L}{d} \right) \vec{\jmath}
+        \end{align*}`,
+    step4_parallel_eq: String.raw`$$ \vec{F}_{\parallel} = Q \cdot \vec{E} = \frac{Q\lambda}{2\pi \varepsilon_0 d} \hat{\imath} $$`,
+    step4_vec_E_inline: String.raw`$\vec{E}$`
 };
 ---
 
@@ -209,6 +214,33 @@ const math = {
                     </div>
                     <div class="step-math-col">
                         <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step3_integral_eq} />
+                    </div>
+                </div>
+            </StepBox>
+
+            <!-- Step 4: Conclusions -->
+            <StepBox label="Resultado final y conclusiones" vizSrc="step3_interactive.html" vizId="viz-step-4">
+                <div class="step-content">
+                    <div class="step-text-col text-yellow-theme">
+                        <p>Resultado:</p>
+                    </div>
+                    <div class="step-math-col">
+                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step4_final_eq} />
+                    </div>
+                </div>
+
+                <div class="step-content" style="margin-top: 2rem;">
+                    <div style="flex: 1; color: #cfcfc2;">
+                        <h4 style="margin-bottom: 1rem; color: var(--accent-green);">Conclusiones</h4>
+                        <ul style="list-style-type: disc; padding-left: 1.5rem; text-align: left;">
+                            <li style="margin-bottom: 0.5rem;">
+                                En este caso, la fuerza tiene que calcularse mediante integración pues el campo <span class="math-highlight-red" set:html={math.step4_vec_E_inline} /> varía en la dirección de la barra.
+                            </li>
+                            <li style="margin-bottom: 0.5rem;">
+                                Si la barra estuviese <strong>paralela</strong> a la línea de carga infinita (a una distancia $d$), el cálculo sería mucho más sencillo, ya que el campo sería constante en todos los puntos de la barra.
+                                <div style="margin-top: 0.5rem; text-align: center;" set:html={math.step4_parallel_eq} />
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </StepBox>
