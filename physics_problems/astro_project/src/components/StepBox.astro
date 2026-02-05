@@ -1,0 +1,25 @@
+---
+interface Props {
+  label: string;
+  vizSrc?: string;
+  vizId?: string;
+}
+
+const { label, vizSrc, vizId } = Astro.props;
+---
+
+<div class="step-box">
+  <span class="step-label">{label}</span>
+
+  <div class="step-content-wrapper">
+    {vizSrc && (
+      <div class="step-viz-col">
+        <iframe src={vizSrc} class="viz-frame" id={vizId} scrolling="no"></iframe>
+      </div>
+    )}
+
+    <div class="step-text-math-col">
+      <slot />
+    </div>
+  </div>
+</div>

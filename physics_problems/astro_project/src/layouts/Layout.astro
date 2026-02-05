@@ -1,0 +1,67 @@
+---
+import '../styles/global.css';
+
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="Problema de física - Campo Eléctrico" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>{title}</title>
+
+        <!-- TikZJax -->
+        <link rel="stylesheet" type="text/css" href="https://tikzjax.com/v1/fonts.css">
+        <script src="https://tikzjax.com/v1/tikzjax.js" defer></script>
+
+        <!-- MathJax Configuration -->
+        <script is:inline>
+            window.MathJax = {
+                tex: {
+                    inlineMath: [['$', '$'], ['\\(', '\\)']],
+                    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                    macros: {
+                        unit: ['\\mathrm{#1}', 1]
+                    }
+                },
+                svg: {
+                    fontCache: 'global'
+                }
+            };
+        </script>
+        <script type="text/javascript" id="MathJax-script" async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+        </script>
+
+        <!-- Mermaid -->
+        <script type="module" is:inline>
+            import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+            mermaid.initialize({
+                startOnLoad: true,
+                theme: 'dark',
+                themeVariables: {
+                    primaryColor: '#a6e22e',
+                    primaryTextColor: '#272822',
+                    primaryBorderColor: '#75715e',
+                    lineColor: '#75715e',
+                    secondaryColor: '#66d9ef',
+                    tertiaryColor: '#f92672',
+                    background: '#272822',
+                    mainBkg: '#272822',
+                    textColor: '#f8f8f2',
+                    fontSize: '16px'
+                }
+            });
+        </script>
+	</head>
+	<body>
+		<slot />
+	</body>
+</html>

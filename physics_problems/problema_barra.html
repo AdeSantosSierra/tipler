@@ -199,6 +199,14 @@
             background-color: rgba(249, 38, 114, 0.05);
         }
 
+        .math-highlight-red {
+            border: 1px dashed #f92672;
+            border-radius: 4px;
+            padding: 2px 4px;
+            display: inline-block;
+            /* Ensure box model works */
+        }
+
         /* Modal */
         .modal-overlay {
             position: fixed;
@@ -461,8 +469,8 @@
         }
 
         .text-yellow-theme {
-            color: #e6db74;
-            /* Monokai Yellow */
+            color: #cfcfc2;
+            /* Monokai Gray/Beige */
             border-right: 1px dashed #75715e;
             /* Attenuated separator (like Vectorialmente) */
             /* Thinner separator (standard) */
@@ -522,43 +530,95 @@
 
 
 
-        <script>
-            // Mouse Follow Tooltip Logic
-            document.addEventListener('DOMContentLoaded', () => {
-                function setupTooltip(triggerElement, tooltipId) {
-                    const tooltip = document.getElementById(tooltipId);
-                    if (!triggerElement || !tooltip) return;
-                    triggerElement.addEventListener('mouseenter', () => {
-                        tooltip.style.display = 'block';
-                        updatePosition(triggerElement, tooltip);
-                        if (window.MathJax && window.MathJax.typesetPromise) {
-                            MathJax.typesetPromise([tooltip]);
-                        }
-                    });
-                    triggerElement.addEventListener('mouseleave', () => {
-                        tooltip.style.display = 'none';
-                    });
-                }
+        <style>
+            .tooltip-box {
+                display: none;
+                position: absolute;
+                background-color: #3e3d32;
+                border: 1px solid #e6db74;
+                color: #f8f8f2;
+                padding: 0.8rem;
+                border-radius: 4px;
+                font-size: 0.9em;
+                z-index: 1000;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+                max-width: 250px;
+                pointer-events: none;
+            }
+        </style>
 
-                // Only for standard hover triggers
-                const textTriggers = document.querySelectorAll('.hover-trigger[data-tooltip]');
-                textTriggers.forEach(t => setupTooltip(t, t.dataset.tooltip));
+        <script>
+            // Improved Tooltip Logic with Delegation for MathJax
+            document.addEventListener('DOMContentLoaded', () => {
+                const tooltipOffset = 15;
 
                 function updatePosition(target, tooltipEl) {
                     const rect = target.getBoundingClientRect();
                     const scrollY = window.scrollY || window.pageYOffset;
                     const scrollX = window.scrollX || window.pageXOffset;
-                    let top = rect.top + scrollY - tooltipEl.offsetHeight - 15;
+
+                    let top = rect.top + scrollY - tooltipEl.offsetHeight - tooltipOffset;
                     let left = rect.left + scrollX + (rect.width / 2) - (tooltipEl.offsetWidth / 2);
+
+                    // Boundary checks
                     if (left < 10) left = 10;
                     if (left + tooltipEl.offsetWidth > window.innerWidth - 10) {
                         left = window.innerWidth - tooltipEl.offsetWidth - 10;
                     }
+                    if (top < scrollY) { // If top goes off-screen, flip to bottom
+                        top = rect.bottom + scrollY + tooltipOffset;
+                    }
+
                     tooltipEl.style.top = `${top}px`;
                     tooltipEl.style.left = `${left}px`;
                 }
+
+                function showTooltip(target, tooltipId) {
+                    const tooltip = document.getElementById(tooltipId);
+                    if (!tooltip) return;
+
+                    tooltip.style.display = 'block';
+                    updatePosition(target, tooltip);
+
+                    if (window.MathJax && window.MathJax.typesetPromise) {
+                        MathJax.typesetPromise([tooltip]).catch(() => { });
+                    }
+                }
+
+                function hideTooltip(tooltipId) {
+                    const tooltip = document.getElementById(tooltipId);
+                    if (tooltip) tooltip.style.display = 'none';
+                }
+
+                // Event Delegation
+                document.body.addEventListener('mouseover', (e) => {
+                    const trigger = e.target.closest('.hover-trigger');
+                    if (!trigger) return;
+
+                    let tooltipId = trigger.dataset.tooltip;
+
+                    // Specific mapping for MathJax classes if dataset is missing (MathJax \class doesn't add data attrs easily)
+                    if (trigger.classList.contains('step1-vector-tooltip')) {
+                        tooltipId = 'tooltip-step1-vector';
+                    }
+                    if (trigger.classList.contains('step2-vector-tooltip')) {
+                        tooltipId = 'tooltip-step2-vector';
+                    }
+
+                    if (tooltipId) {
+                        showTooltip(trigger, tooltipId);
+                        trigger._activeTooltipId = tooltipId; // Store for mouseout
+                    }
+                });
+
+                document.body.addEventListener('mouseout', (e) => {
+                    const trigger = e.target.closest('.hover-trigger');
+                    if (!trigger || !trigger._activeTooltipId) return;
+
+                    hideTooltip(trigger._activeTooltipId);
+                    trigger._activeTooltipId = null;
+                });
             });
-            // SCROLL LISTENER REMOVED as requested
         </script>
 
         <div class="content-scroll">
@@ -566,7 +626,7 @@
             <div class="step-box">
                 <span class="step-label">Enunciado del Problema</span>
 
-                <div class="step-content-wrapper">
+                <div class="step-content-wrapper" style="margin-top: -1rem;">
                     <!-- Left Column: Visualization (Geometry Only) -->
                     <div class="step-viz-col">
                         <iframe src="initial_interactive.html?v=3" class="viz-frame" id="viz-step-0"
@@ -576,8 +636,7 @@
                     <!-- Right Column: Text -->
                     <div class="step-text-math-col">
                         <div class="step-content">
-                            <div class="step-text-col text-yellow-theme"
-                                style="flex: 1; border: none; text-align: left;">
+                            <div class="step-text-col" style="flex: 1; border: none; text-align: left; color: white;">
                                 <p>Una barra de longitud \(L\) se encuentra en dirección perpendicular a una carga
                                     lineal uniforme e infinitamente larga de densidad de carga \(\lambda\) \(\frac {
                                     \unit { C } } { \unit { m } } \).</p>
@@ -667,7 +726,8 @@
                             <div class="step-math-col">
                                 <div style="font-size: 1.1em; overflow-x: auto;">
                                     \begin{align*}
-                                    \vec{E} &= \frac{\lambda}{2\pi \varepsilon_0 r} \hat{r} \quad
+                                    \vec{E} &= \frac{\lambda}{2\pi \varepsilon_0} \bbox[4px,border:1px dashed
+                                    #f92672;border-radius:8px,#3d292e]{\frac{\hat{r}}{r}} \quad
                                     \left[\frac{\unit{N}}{\unit{C}}\right]
                                     \end{align*}
                                 </div>
@@ -708,7 +768,8 @@
                             <div class="step-math-col">
                                 <div style="font-size: 1.1em; overflow-x: auto;">
                                     \begin{align*}
-                                    \vec{E} &= \frac{\lambda}{2\pi \varepsilon_0 y} \, \hat{j} \quad
+                                    \vec{E} &= \frac{\lambda}{2\pi \varepsilon_0} \bbox[4px,border:1px dashed
+                                    #f92672;border-radius:8px,#3d292e]{\frac{\vec{\jmath}}{y}} \quad
                                     \left[\frac{\unit{N}}{\unit{C}}\right]
                                     \end{align*}
                                 </div>
@@ -718,51 +779,65 @@
                 </div>
             </div>
 
-            <div class="solution-text-separator" id="section-differential">
-                La fuerza eléctrica se calcula como el producto del campo eléctrico por la carga en dicho
-                punto. Como en la barra de longitud \(L\), esta está situada en la misma dirección de
-                variación del campo eléctrico, entonces tenemos que recurrir a la integración.
-            </div>
+            <!-- Step 3: Differential Force -->
+            <div class="step-box">
+                <span class="step-label">Paso 3: Calculando la Fuerza eléctrica sobre la barra</span>
 
-            <!-- Block 4: Por otro lado -->
-            <div class="solution-block">
-                <div class="col-text">
-                    Por otro lado, calculamos la fuerza como:
-                </div>
-                <div class="col-math">
-                    $$ \vec{F} = \int d\vec{F} $$
-                </div>
-            </div>
+                <div class="step-content-wrapper">
+                    <!-- Left Column: Visualization (Step 3 - With dq and dF) -->
+                    <div class="step-viz-col">
+                        <iframe src="step3_interactive.html" class="viz-frame" id="viz-step-3" scrolling="no"></iframe>
+                    </div>
 
-            <!-- Block 5: Donde -->
-            <div class="solution-block">
-                <div class="col-text">
-                    Donde:
-                </div>
-                <div class="col-math">
-                    $$ d\vec{F} = \vec{E} \, dq $$
-                </div>
-            </div>
+                    <!-- Right Column: Text & Math -->
+                    <div class="step-text-math-col">
 
-            <!-- Block 6: Y (with sidenote) -->
-            <div class="solution-block">
-                <div class="col-text">
-                    Y:
-                </div>
-                <div class="col-math">
-                    <div class="sidenote-container" style="justify-content: flex-start; margin: 0; width: 100%;">
-                        <div class="highlight-box" style="margin: 0;">
-                            $$ dq = \frac{\mathrm{Q}}{L} \, dy $$
+                        <!-- 1. Differential Charge -->
+                        <div class="step-content">
+                            <div class="step-text-col text-yellow-theme"
+                                style="flex: 1; border: none; text-align: left;">
+                                <p>Tomamos un elemento diferencial de carga \(dq\) en la barra, que corresponde a una
+                                    longitud \(dy\) a una altura \(y\).</p>
+                            </div>
+                            <div class="step-math-col">
+                                <div style="font-size: 1.1em; overflow-x: auto;">
+                                    \begin{align*}
+                                    dq &= \frac{Q}{L} dy
+                                    \end{align*}
+                                </div>
+                            </div>
                         </div>
-                        <div class="sidenote">
-                            distribución lineal del segmento vertical finito
+
+                        <!-- 2. Differential Force -->
+                        <div class="step-content">
+                            <div class="step-text-col text-yellow-theme"
+                                style="flex: 1; border: none; text-align: left;">
+                                <p>La fuerza diferencial que ejerce el campo sobre este elemento es:</p>
+                            </div>
+                            <div class="step-math-col">
+                                <div style="font-size: 1.1em; overflow-x: auto;">
+                                    \begin{align*}
+                                    d\vec{F} = dq \vec{E} = \left( \frac{Q}{L} dy \right) \left( \frac{\lambda}{2\pi
+                                    \varepsilon_0 y} \vec{\jmath} \right)
+                                    \end{align*}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
+
+
         </div>
     </div>
+
+    <!-- Tooltips -->
+    <div id="tooltip-step1-vector" class="tooltip-box">
+        Geometría del campo Eléctrico. Como es una línea infinita de carga, el campo eléctrico disminuye de forma
+        radial.
+    </div>
+
 
     <!-- Modal -->
     <div id="math-modal" class="modal-overlay">

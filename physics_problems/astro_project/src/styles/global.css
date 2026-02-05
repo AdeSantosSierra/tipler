@@ -1,0 +1,452 @@
+:root {
+    --bg-color: #272822;
+    --text-color: #f8f8f2;
+    --box-bg: #3e3d32;
+    --box-border: #75715e;
+    --accent-blue: #66d9ef;
+    --accent-green: #e6db74;
+    --accent-orange: #fd971f;
+    --accent-purple: #ae81ff;
+    --accent-red: #f92672;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+/* Container removed as Astro layouts handle centering often, but keeping for compatibility if reused */
+.container {
+    max-width: 800px;
+    width: 100%;
+}
+
+.tcolorbox {
+    background-color: var(--box-bg);
+    border: 1px solid var(--box-border);
+    border-radius: 4px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.tcolorbox.planteamiento {
+    border-left: 5px solid var(--accent-green);
+}
+
+.solution-section h2 {
+    color: var(--accent-green);
+    border-bottom: 1px solid var(--box-border);
+    padding-bottom: 0.5rem;
+    margin-top: 2rem;
+}
+
+.highlight-box {
+    border: 1px dashed var(--accent-red);
+    padding: 1rem;
+    text-align: center;
+    background-color: rgba(249, 38, 114, 0.1);
+    margin: 1rem 0;
+}
+
+/* MathJax Adjustments */
+.mjx-chtml {
+    color: var(--text-color) !important;
+}
+
+/* Center content */
+.center-content {
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0;
+}
+
+/* Two-Column Grid Layout */
+.solution-grid {
+    display: grid;
+    grid-template-columns: 30% 70%;
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.solution-row {
+    display: contents;
+}
+
+.solution-block {
+    display: flex;
+    border-bottom: 1px dotted rgba(255, 255, 255, 0.05);
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+}
+
+.solution-block:last-child {
+    margin-bottom: 0;
+    border-bottom: none;
+}
+
+.col-text {
+    width: 30%;
+    padding-right: 1.5rem;
+    border-right: 1px dashed var(--monokai-text-dim, #75715e);
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    text-align: right;
+    color: var(--accent-green);
+    font-size: 0.95em;
+}
+
+.solution-block.no-label .col-text {
+    border-right: none;
+}
+
+.col-math {
+    width: 70%;
+    padding-left: 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.col-text p,
+.col-math p {
+    margin: 0;
+}
+
+/* Interactive Math */
+.interactive-math {
+    border: 2px solid transparent;
+    border-radius: 4px;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.interactive-math:hover {
+    border-color: var(--accent-red);
+    background-color: rgba(249, 38, 114, 0.05);
+}
+
+.math-highlight-red {
+    border: 1px dashed #f92672;
+    border-radius: 4px;
+    padding: 2px 4px;
+    display: inline-block;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-content {
+    background-color: var(--box-bg);
+    border: 1px solid var(--accent-green);
+    padding: 2rem;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: var(--monokai-text-dim, #ccc);
+    font-size: 1.5rem;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.modal-close:hover {
+    color: var(--accent-red);
+}
+
+.solution-text-separator {
+    width: 100%;
+    margin: 1.5rem 0;
+    text-align: center;
+    color: var(--text-color);
+    font-size: 0.95em;
+    padding: 0 1rem;
+}
+
+@media (max-width: 768px) {
+    .solution-block {
+        flex-direction: column;
+    }
+
+    .col-text,
+    .col-math {
+        width: 100%;
+        border-right: none;
+        justify-content: flex-start;
+        text-align: left;
+        padding: 0.5rem 0;
+    }
+
+    .col-text {
+        border-bottom: 1px dashed var(--box-border);
+    }
+}
+
+/* Math Interaction Styles */
+.math-term-source,
+.math-term-target {
+    display: inline-block !important;
+    padding: 4px !important;
+    border: 1px solid transparent !important;
+    border-radius: 6px;
+    cursor: default;
+    position: relative;
+    z-index: 10;
+    transition: all 0.2s;
+}
+
+.math-term-target {
+    cursor: pointer;
+}
+
+/* Org Chart Styles */
+.org-chart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+}
+
+.chart-level {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    width: 100%;
+}
+
+.chart-level.split {
+    gap: 2rem;
+}
+
+.chart-level.triple {
+    gap: 2.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.chart-node {
+    background: var(--monokai-bg);
+    border: 1px solid var(--box-border);
+    border-radius: 6px;
+    padding: 1.2rem 1.5rem;
+    min-width: 200px;
+    max-width: 250px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.chart-node:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.chart-node.small {
+    min-width: 160px;
+    max-width: 180px;
+    padding: 1rem 1.2rem;
+}
+
+.node-title {
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--monokai-text-dim);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.node-content {
+    font-size: 1em;
+    color: var(--monokai-fg);
+    font-weight: 500;
+}
+
+.node-content.small {
+    font-size: 0.9em;
+}
+
+/* Connecting Lines */
+.vertical-line {
+    width: 2px;
+    height: 40px;
+    margin: 0 auto;
+}
+
+.vertical-line.short {
+    height: 30px;
+}
+
+.horizontal-line {
+    height: 2px;
+    width: 60%;
+    margin: 0 auto;
+}
+
+.horizontal-line.sub {
+    width: 50%;
+}
+
+.branch-container,
+.sub-branch-container,
+.convergence-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.branch-splits,
+.sub-splits {
+    display: flex;
+    justify-content: space-around;
+    width: 60%;
+}
+
+.sub-splits {
+    width: 50%;
+}
+
+.convergence-lines {
+    display: flex;
+    justify-content: space-around;
+    width: 80%;
+}
+
+.main-layout {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* Step Box Internal Layout - Wrapped for Side-by-Side */
+.step-content-wrapper {
+    display: flex;
+    gap: 2rem;
+    align-items: stretch;
+}
+
+.step-viz-col {
+    flex: 0 0 40%;
+    min-height: 400px;
+    background: transparent;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+.step-text-math-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.step-content {
+    display: flex;
+    align-items: stretch;
+    gap: 1.5rem;
+}
+
+.step-text-col {
+    flex: 0 0 200px;
+    font-size: 0.95em;
+    color: #d6d6d6;
+}
+
+.text-yellow-theme {
+    color: #cfcfc2;
+    border-right: 1px dashed #75715e;
+    padding-right: 1.5rem;
+    text-align: right;
+}
+
+.step-math-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.inline-viz {
+    width: 100%;
+    height: 300px;
+    border: 1px solid var(--box-border);
+    border-radius: 8px;
+    background: #000;
+}
+
+.step-box {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--box-border);
+    border-radius: 8px;
+    padding: 2rem;
+    margin: 2rem 0;
+    position: relative;
+}
+
+.step-label {
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    background: var(--bg-color);
+    padding: 0 10px;
+    color: var(--accent-green);
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: bold;
+    border: 1px solid var(--box-border);
+    border-radius: 4px;
+}
+
+iframe.viz-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.tooltip-box {
+    display: none;
+    position: absolute;
+    background-color: #3e3d32;
+    border: 1px solid #e6db74;
+    color: #f8f8f2;
+    padding: 0.8rem;
+    border-radius: 4px;
+    font-size: 0.9em;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    max-width: 250px;
+    pointer-events: none;
+}

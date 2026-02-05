@@ -1,0 +1,442 @@
+---
+import Layout from '../layouts/Layout.astro';
+import StepBox from '../components/StepBox.astro';
+
+const math = {
+    step0_lambda: String.raw`\(\lambda\)`,
+    step0_units: String.raw`\(\left[\frac { \unit { C } } { \unit { m } } \right]\)`,
+    step0_L: String.raw`\(L\)`,
+    step0_d: String.raw`\(d\)`,
+    step0_Q: String.raw`\(\mathrm { Q } \)`,
+    
+    step1_E: String.raw`\(\vec{E}\)`,
+    step1_S: String.raw`\(S\)`,
+    step1_r: String.raw`\(r\)`,
+    step1_Lp: String.raw`\(L'\)`,
+    step1_flux_eq: String.raw`
+        \begin{align*}
+        \oint_S \vec{E} \cdot d\vec{S} &= \oint_S E dS = E \oint_S dS =
+        \class{math-term-source-2}{E (2\pi r L')}
+        \end{align*}`,
+    step1_lambda_units: String.raw`\(\lambda\)`,
+    step1_Qm: String.raw`\(\frac{Q}{m}\)`,
+    step1_Qenc_eq: String.raw`
+        \begin{align*}
+        \mathrm{Q}_{\text{enc}} &= \class{math-term-source}{\lambda L'}
+        \end{align*}`,
+    step1_gauss_E: String.raw`\(E\)`,
+    step1_gauss_eq: String.raw`
+        \begin{align*}
+        \class{math-term-target-2}{\bbox[4px,border:1px dashed
+        #a6e22e;border-radius:8px,#272822]{E (2\pi r L')}} &=
+        \frac{\class{math-term-target}{\bbox[4px,border:1px dashed
+        #f92672;border-radius:8px,#272822]{\lambda L'}}}{\varepsilon_0} \\[10pt]
+        E &= \frac{\lambda}{2\pi \varepsilon_0 r} \quad
+        \left[\frac{\unit{N}}{\unit{C}}\right]
+        \end{align*}`,
+    step1_final_eq: String.raw`
+        \begin{align*}
+        \vec{E} &= \frac{\lambda}{2\pi \varepsilon_0} \class{hover-trigger radial-tooltip}{\bbox[4px,border:1px dashed
+        #f92672;border-radius:8px,#3d292e]{\frac{\hat{r}}{r}}} \quad
+        \left[\frac{\unit{N}}{\unit{C}}\right]
+        \end{align*}`,
+
+    step2_vec_eq: String.raw`
+        \begin{align*}
+        \vec{E} &= \frac{\lambda}{2\pi \varepsilon_0} \class{hover-trigger step2-j-tooltip}{\bbox[4px,border:1px dashed
+        #f92672;border-radius:8px,#3d292e]{\frac{\vec{\jmath}}{y}}} \quad
+        \left[\frac{\unit{N}}{\unit{C}}\right]
+        \end{align*}`,
+
+    step3_dq: String.raw`\(dq\)`,
+    step3_dy: String.raw`\(dy\)`,
+    step3_y: String.raw`\(y\)`,
+    step3_dq_eq: String.raw`
+        \begin{align*}
+        dq &= \frac{Q}{L} dy
+        \end{align*}`,
+    step3_dF_vec: String.raw`\(d\vec{F}\)`,
+    step3_dF_eq: String.raw`
+
+        \begin{align*}
+        d\vec{F} = \vec{E} dq &= \left( \frac{\lambda}{2\pi \varepsilon_0 y} \vec{\jmath} \right) \left( \frac{Q}{L} dy \right) \\
+              &= \left( \frac{Q\lambda}{2\pi \varepsilon_0 L} \right) \frac{dy}{y} \vec{\jmath}
+        \end{align*}`,
+    step3_integral_eq: String.raw`
+        \begin{align*}
+        \vec{F} &= \int_{d}^{d+L} d\vec{F} = \int_{d}^{d+L} \left( \frac{Q\lambda}{2\pi \varepsilon_0 L} \right) \frac{dy}{y} \vec{\jmath} \\[10pt]
+        &= \left( \frac{Q\lambda}{2\pi \varepsilon_0 L} \right) \vec{\jmath} \class{hover-trigger integral-tooltip}{\bbox[4px,border:1px dashed
+        #f92672;border-radius:8px,#3d292e]{\int_{d}^{d+L} \frac{dy}{y}}} \\[10pt]
+        &= \left( \frac{Q\lambda}{2\pi \varepsilon_0 L} \right) \ln\left( \frac{d+L}{d} \right) \vec{\jmath} \quad \left[ \unit{N} \right]
+        \end{align*}`,
+    gauss_tooltip_eq: String.raw`$$ \oint \vec{E} \cdot d\vec{S} = \frac{Q_{\text{enc}}}{\varepsilon_0} $$`,
+    radial_tooltip_text: String.raw`Ponemos $\hat{r}$ porque el campo es radial`,
+    step2_tooltip_text: String.raw`En el plano XY, donde se encuentra la barra, el campo $\vec{E}$, tiene dirección y sentido $\vec{\jmath}$`,
+    integral_tooltip_text: String.raw`$$ \int_a^b \frac{dy}{y} = \ln\left(\frac{b}{a}\right) $$`,
+    step3_lim_lower: String.raw`\(y=d\)`,
+    step3_lim_upper: String.raw`\(y=d+L\)`,
+    step3_y0: String.raw`\(y=0\)`,
+    step1_Lp_tooltip_text: String.raw`Esta longitud es diferente a la longitud de la barra, que es $L$. No se tienen que confundir.`
+};
+---
+
+<Layout title="Problema Barra - Física">
+    <div class="main-layout">
+        <div class="content-scroll">
+            <!-- Step 0: Enunciado (Problem Statement) -->
+            <StepBox label="Enunciado del Problema" vizSrc="initial_interactive.html?v=3" vizId="viz-step-0">
+                <div class="step-content">
+                    <div class="step-text-col" style="flex: 1; border: none; text-align: left; color: white;">
+                        <p>Una barra de longitud {math.step0_L} se encuentra en dirección perpendicular a una carga
+                            lineal uniforme e infinitamente larga de densidad de carga {math.step0_lambda} {math.step0_units}.</p>
+                        <p style="margin-top: 1rem;">El extremo más próximo de la barra a la carga lineal dista
+                            de ésta la longitud {math.step0_d}.</p>
+                        <p style="margin-top: 1rem;">La barra posee una carga total {math.step0_Q}
+                            distribuida uniformemente en toda su longitud.</p>
+                        <p style="margin-top: 1rem;">Determinar la fuerza que la carga lineal ejerce sobre la
+                            barra.</p>
+                    </div>
+                </div>
+            </StepBox>
+
+            <!-- Step 1: Gauss -->
+            <StepBox label="Paso 1: Calcular Campo Eléctrico" vizSrc="final_interactive.html?v=11" vizId="viz-step-1">
+                <!-- 1. Flux Integral -->
+                <div class="step-content">
+                    <div class="step-text-col text-yellow-theme">
+                        <p>Calcula el flujo del campo Eléctrico ({math.step1_E}) que atraviesa la superficie
+                            gaussiana {math.step1_S} (de radio {math.step1_r} y longitud <span class="hover-trigger Lp-tooltip" style="border-bottom: 1px dashed var(--accent-red); cursor: help;">{math.step1_Lp}</span>).</p>
+                    </div>
+                    <div class="step-math-col">
+                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step1_flux_eq} />
+                    </div>
+                </div>
+
+                <!-- 2. Enclosed Charge -->
+                <div class="step-content">
+                    <div class="step-text-col text-yellow-theme">
+                        <p>Las unidades de {math.step1_lambda_units} son {math.step1_Qm}.</p>
+                    </div>
+                    <div class="step-math-col">
+                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step1_Qenc_eq} />
+                    </div>
+                </div>
+
+                <!-- 3. Gauss Law Relation & Scalar Result -->
+                <div class="step-content">
+                    <div class="step-text-col text-yellow-theme">
+                        <p>Según la <span class="hover-trigger" data-tooltip="tooltip-gauss" style="border-bottom: 1px dashed var(--accent-red); cursor: help;">Ley de Gauss</span>, podemos relacionar ambas expresiones y despejar {math.step1_gauss_E}.</p>
+                    </div>
+                    <div class="step-math-col">
+                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step1_gauss_eq} />
+                    </div>
+                </div>
+
+                <!-- 4. Vector Result -->
+                <div class="step-content">
+                    <div class="step-text-col text-yellow-theme">
+                        <p>Finalmente:</p>
+                    </div>
+                    <div class="step-math-col">
+                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step1_final_eq} />
+                    </div>
+                </div>
+            </StepBox>
+
+            <!-- Step 2: Vector Projection -->
+            <StepBox label="Paso 2: Expresión Vectorial" vizSrc="step2_interactive.html" vizId="viz-step-2">
+                <!-- 1. Intro Text -->
+                <div class="step-content">
+                    <div class="step-text-col text-yellow-theme" style="flex: 1; border: none; text-align: left;">
+                        <p style="margin-top: 1rem;">La dirección del campo eléctrico concretamente en la
+                            barra de longitud {math.step0_L} (en todos sus puntos) es vertical. Esto tiene una conclusión 
+                            importante: El campo varía a lo largo de la barra (en un extremo tiene un valor diferente 
+                            que en el otro extremo).</p>
+                    </div>
+                </div>
+
+                <!-- 2. Vector Equation -->
+                <div class="step-content">
+                    <div class="step-text-col text-yellow-theme">
+                        <p>Vectorialmente:</p>
+                    </div>
+                    <div class="step-math-col">
+                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step2_vec_eq} />
+                    </div>
+                </div>
+            </StepBox>
+
+            <!-- Step 3: Differential Force -->
+            <StepBox label="Paso 3: Calculando la Fuerza eléctrica sobre la barra" vizSrc="step3_interactive.html" vizId="viz-step-3">
+                <!-- 1. Intro Full Width -->
+                <div style="width: 100%; margin-bottom: 2rem;">
+                    <p style="color: #cfcfc2; font-size: 0.95em;">Para calcular la fuerza tenemos que obtener primero cuál es la fuerza aplicada sobre un 
+                            elemento pequeño de la barra (que denominamos {math.step3_dq}).</p>
+                    <p style="color: #cfcfc2; font-size: 0.95em; margin-top: 1rem;">El {math.step3_dq} puede obtenerse como una proporción con 
+                            respecto a la distancia que ocupa dicho {math.step3_dq}. Esa distancia se denomina 
+                            {math.step3_dy} (puesto que la barra está orientada en el eje y).</p>
+                </div>
+
+                <!-- 2. Differential Charge -->
+                <div class="step-content">
+                    <div class="step-text-col text-yellow-theme">
+                        <p>¿Cuánta carga contiene dicho {math.step3_dq}?</p>
+                    </div>
+                    <div class="step-math-col">
+                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step3_dq_eq} />
+                    </div>
+                </div>
+
+                <!-- 3. Differential Force -->
+                <div class="step-content">
+                    <div class="step-text-col text-yellow-theme">
+                        <p>La fuerza aplicada a dicho elemento {math.step3_dq} es por lo tanto {math.step3_dF_vec}.</p>
+                    </div>
+                    <div class="step-math-col">
+                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step3_dF_eq} />
+                    </div>
+                </div>
+
+                <!-- 4. Integration (Total Force) -->
+                <div style="width: 100%; margin-top: 2rem; margin-bottom: 2rem;">
+                     <p style="color: #cfcfc2; font-size: 0.95em;">Para calcular la fuerza total en la barra tenemos que integrar a lo largo de la barra, 
+                     es decir entre los puntos <span set:html={math.step3_lim_lower} /> (puesto que la carga lineal está en <span set:html={math.step3_y0} /> y la barra está a una distancia {math.step0_d}) y el punto <span set:html={math.step3_lim_upper} /> (ya que la barra tiene una longitud {math.step0_L}).</p>
+                </div>
+
+                <div class="step-content">
+                    <div class="step-text-col text-yellow-theme">
+                        <p>Integrando:</p>
+                    </div>
+                    <div class="step-math-col">
+                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step3_integral_eq} />
+                    </div>
+                </div>
+            </StepBox>
+        </div>
+    </div>
+
+    <!-- Tooltips -->
+    <!-- Tooltips -->
+    <div id="tooltip-radial" class="tooltip-box">{math.radial_tooltip_text}</div>
+    <div id="tooltip-step2-j" class="tooltip-box">{math.step2_tooltip_text}</div>
+    <div id="tooltip-integral" class="tooltip-box"><div set:html={math.integral_tooltip_text} /></div>
+    <div id="tooltip-Lp" class="tooltip-box">{math.step1_Lp_tooltip_text}</div>
+
+    <div id="tooltip-step1-vector" class="tooltip-box">
+        Geometría del campo Eléctrico. Como es una línea infinita de carga, el campo eléctrico disminuye de forma
+        radial.
+    </div>
+
+    <!-- Gauss Tooltip -->
+    <div id="tooltip-gauss" class="tooltip-box" style="width: 300px; max-width: 300px;">
+        <h4 style="margin: 0 0 0.5rem 0; color: var(--accent-green);">Ley de Gauss</h4>
+        <p style="margin-bottom: 0.5rem;">Relaciona el flujo eléctrico a través de una superficie cerrada con la carga encerrada.</p>
+        <div set:html={math.gauss_tooltip_eq} />
+    </div>
+
+    <!-- Modal -->
+    <div id="math-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <div id="modal-body-text">
+                <!-- Content injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- LeaderLine Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leader-line/1.0.7/leader-line.min.js" is:inline></script>
+
+    <!-- Interactive Scripts -->
+    <script is:inline>
+        // Tooltip Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const tooltipOffset = 15;
+
+            function updatePosition(target, tooltipEl) {
+                const rect = target.getBoundingClientRect();
+                const scrollY = window.scrollY || window.pageYOffset;
+                const scrollX = window.scrollX || window.pageXOffset;
+
+                let top = rect.top + scrollY - tooltipEl.offsetHeight - tooltipOffset;
+                let left = rect.left + scrollX + (rect.width / 2) - (tooltipEl.offsetWidth / 2);
+
+                if (left < 10) left = 10;
+                if (left + tooltipEl.offsetWidth > window.innerWidth - 10) {
+                    left = window.innerWidth - tooltipEl.offsetWidth - 10;
+                }
+                if (top < scrollY) {
+                    top = rect.bottom + scrollY + tooltipOffset;
+                }
+
+                tooltipEl.style.top = `${top}px`;
+                tooltipEl.style.left = `${left}px`;
+            }
+
+            function showTooltip(target, tooltipId) {
+                const tooltip = document.getElementById(tooltipId);
+                if (!tooltip) return;
+
+                tooltip.style.display = 'block';
+                updatePosition(target, tooltip);
+
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    MathJax.typesetPromise([tooltip]).catch(() => { });
+                }
+            }
+
+            function hideTooltip(tooltipId) {
+                const tooltip = document.getElementById(tooltipId);
+                if (tooltip) tooltip.style.display = 'none';
+            }
+
+            document.body.addEventListener('mouseover', (e) => {
+                const trigger = e.target.closest('.hover-trigger');
+                if (!trigger) return;
+
+                let tooltipId = trigger.dataset.tooltip;
+                if (trigger.classList.contains('step1-vector-tooltip')) {
+                    tooltipId = 'tooltip-step1-vector';
+                }
+                if (trigger.classList.contains('radial-tooltip')) {
+                    tooltipId = 'tooltip-radial';
+                }
+                if (trigger.classList.contains('step2-j-tooltip')) {
+                    tooltipId = 'tooltip-step2-j';
+                }
+                if (trigger.classList.contains('integral-tooltip')) {
+                    tooltipId = 'tooltip-integral';
+                }
+                if (trigger.classList.contains('Lp-tooltip')) {
+                    tooltipId = 'tooltip-Lp';
+                }
+                if (trigger.classList.contains('step2-vector-tooltip')) {
+                    tooltipId = 'tooltip-step2-vector';
+                }
+
+                if (tooltipId) {
+                    showTooltip(trigger, tooltipId);
+                    trigger._activeTooltipId = tooltipId;
+                }
+            });
+
+            document.body.addEventListener('mouseout', (e) => {
+                const trigger = e.target.closest('.hover-trigger');
+                if (!trigger || !trigger._activeTooltipId) return;
+
+                hideTooltip(trigger._activeTooltipId);
+                trigger._activeTooltipId = null;
+            });
+        });
+
+        // Modal Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('math-modal');
+            const closeBtn = document.querySelector('.modal-close');
+            const triggers = document.querySelectorAll('.interactive-math');
+            const bodyText = document.getElementById('modal-body-text');
+
+            const contentMap = {
+                'planteamiento': `
+                    <h3 style="color: var(--accent-green); margin-top: 0;">Planteamiento</h3>
+                    <p>La ley de Gauss relaciona el flujo eléctrico que atraviesa una superficie cualquiera cerrada $S$
+                        con la carga encerrada por la misma: </p>
+                    $$ \\oint_S \\vec{E} \\cdot d\\vec{S} = \\frac{\\mathrm{Q}_{\\text{enc}}}{\\varepsilon_0} $$
+                    <p>Por otro lado, la fuerza se relaciona con el campo eléctrico como: </p>
+                    $$ d\\vec{F} = \\vec{E} \\, dq $$
+                `,
+                'default': `
+                    <h3 style="color: var(--accent-green); margin-top: 0;">Detalle Matemático</h3>
+                    <p>Partimos de la Ley de Gauss general:</p>
+                    $$ \\oint_S \\vec{E} \\cdot d\\vec{S} = \\frac{\\mathrm{Q}_{\\text{enc}}}{\\varepsilon_0} $$
+                `
+            };
+
+            if (modal && bodyText) {
+                triggers.forEach(trigger => {
+                    trigger.addEventListener('click', () => {
+                        const type = trigger.getAttribute('data-modal') || 'default';
+                        bodyText.innerHTML = contentMap[type];
+                        if (window.MathJax) {
+                            MathJax.typesetPromise ? MathJax.typesetPromise([bodyText]) : MathJax.Hub.Queue(["Typeset", MathJax.Hub, bodyText]);
+                        }
+                        modal.classList.add('active');
+                    });
+                });
+
+                closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) modal.classList.remove('active');
+                });
+            }
+        });
+
+        // Equation Linking
+        document.addEventListener('DOMContentLoaded', () => {
+            function safeInit() {
+                initEquationLinking();
+            }
+            if (window.MathJax && window.MathJax.startup) {
+                window.MathJax.startup.promise.then(safeInit);
+            } else {
+                setTimeout(safeInit, 2000);
+            }
+        });
+
+        function initEquationLinking() {
+            const sources = document.getElementsByClassName('math-term-source');
+            const targets = document.getElementsByClassName('math-term-target');
+
+            if (sources.length > 0 && targets.length > 0) {
+                const source = sources[0];
+                const target = targets[0];
+                let line = null;
+
+                target.addEventListener('mouseenter', () => {
+                    if (window.LeaderLine) {
+                        line = new LeaderLine(source, target, {
+                            color: '#f92672',
+                            size: 2,
+                            path: 'grid',
+                            startSocket: 'right',
+                            endSocket: 'right',
+                            startPlug: 'disc',
+                            endPlug: 'arrow3',
+                            dash: { animation: true }
+                        });
+                    }
+                });
+                const removeLine = () => { if (line) { line.remove(); line = null; } };
+                target.addEventListener('mouseleave', removeLine);
+                window.addEventListener('scroll', removeLine);
+            }
+
+            const sources2 = document.getElementsByClassName('math-term-source-2');
+            const targets2 = document.getElementsByClassName('math-term-target-2');
+
+            if (sources2.length > 0 && targets2.length > 0) {
+                const source2 = sources2[0];
+                const target2 = targets2[0];
+                let line2 = null;
+
+                target2.addEventListener('mouseenter', () => {
+                    if (window.LeaderLine) {
+                        line2 = new LeaderLine(source2, target2, {
+                            color: '#a6e22e',
+                            size: 2,
+                            path: 'grid',
+                            startSocket: 'bottom',
+                            endSocket: 'right',
+                            startPlug: 'disc',
+                            endPlug: 'arrow3',
+                            dash: { animation: true }
+                        });
+                    }
+                });
+                const removeLine2 = () => { if (line2) { line2.remove(); line2 = null; } };
+                target2.addEventListener('mouseleave', removeLine2);
+                window.addEventListener('scroll', removeLine2);
+            }
+        }
+    </script>
+</Layout>
