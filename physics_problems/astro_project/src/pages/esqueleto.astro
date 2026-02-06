@@ -1,0 +1,84 @@
+---
+import Layout from '../layouts/Layout.astro';
+import StepBox from '../components/StepBox.astro';
+
+const math = {
+    // Enunciado placeholders
+    step0_var1: String.raw`\(x\)`,
+    step0_var2: String.raw`\(y\)`,
+
+    // Paso 1 placeholders
+    step1_eq: String.raw`
+        \begin{align*}
+        E &= mc^2
+        \end{align*}`,
+    
+    // Conclusiones placeholders
+    final_result: String.raw`
+        \begin{align*}
+        \text{Resultado Final} &= 0 \quad [\text{Unidades}]
+        \end{align*}`,
+};
+---
+
+<Layout title="Nuevo Problema - Física">
+    <div class="main-layout">
+        <div class="content-scroll">
+            
+            <!-- Step 0: Enunciado (Problem Statement) -->
+            <StepBox label="Enunciado del Problema" vizSrc="about:blank" vizId="viz-step-0">
+                <div class="step-content">
+                    <div class="step-text-col" style="flex: 1; border: none; text-align: left; color: white;">
+                        <p>Enunciado del problema aquí.</p>
+                        <p style="margin-top: 0.5rem;">Descripción de las variables {math.step0_var1} y {math.step0_var2}.</p>
+                        <p style="margin-top: 0.5rem;">Pregunta a resolver.</p>
+                    </div>
+                </div>
+            </StepBox>
+
+            <!-- Step 1: Primer Paso -->
+            <StepBox label="Paso 1: Título del Paso" vizSrc="about:blank" vizId="viz-step-1">
+                <!-- 1. Intro Step -->
+                <div class="step-content">
+                    <div class="step-text-col text-yellow-theme">
+                        <p>Explicación del primer paso.</p>
+                    </div>
+                    <div class="step-math-col">
+                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step1_eq} />
+                    </div>
+                </div>
+            </StepBox>
+
+            <!-- ... More Steps ... -->
+
+            <!-- Output/Conclusions -->
+            <StepBox label="Resultados y Conclusiones">
+                <div class="step-content">
+                    <div class="step-math-col">
+                        <div style="font-size: 1.1em; overflow-x: auto; text-align: center;" set:html={math.final_result} />
+                    </div>
+                </div>
+
+                <div class="step-content" style="margin-top: 2rem;">
+                    <div style="flex: 1; color: #cfcfc2;">
+                        <h4 style="margin-bottom: 1rem; color: var(--accent-green);">Conclusiones</h4>
+                        <ul style="list-style-type: disc; padding-left: 1.5rem; text-align: left;">
+                            <li style="margin-bottom: 0.5rem;">
+                                Primera conclusión importante.
+                            </li>
+                            <li style="margin-bottom: 0.5rem;">
+                                Segunda conclusión o caso límite.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </StepBox>
+
+        </div>
+    </div>
+</Layout>
+
+<style>
+    /* Estilos específicos para esta página si fueran necesarios */
+    /* Los estilos globales están en src/styles/global.css y Layout.astro */
+</style>

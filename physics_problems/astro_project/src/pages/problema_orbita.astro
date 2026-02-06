@@ -1,0 +1,112 @@
+---
+import Layout from '../layouts/Layout.astro';
+import StepBox from '../components/StepBox.astro';
+
+const math = {
+    lambda: String.raw`\(\lambda\)`,
+    mass: String.raw`\(m\)`,
+    q: String.raw`\(q\)`,
+    R: String.raw`\(R\)`,
+    
+    step1_E_vec: String.raw`\(\vec{E}\)`,
+    step1_eq: String.raw`
+        \begin{align*}
+        E &= \frac{\lambda}{2\pi \varepsilon_0 R}
+        \end{align*}`,
+    
+    step2_Fe: String.raw`\(F_e\)`,
+    step2_Fc: String.raw`\(F_c\)`,
+    step2_eq: String.raw`
+        \begin{align*}
+        F_e &= F_c \\[10pt]
+        |q| E &= m \omega^2 R \\[10pt]
+        \frac{|q|\lambda}{2\pi \varepsilon_0 R} &= m \omega^2 R
+        \end{align*}`,
+
+    step3_T: String.raw`\(T\)`,
+    step3_eq: String.raw`
+        \begin{align*}
+        \omega^2 &= \frac{|q|\lambda}{2\pi \varepsilon_0 m R^2} \\[10pt]
+        \left( \frac{2\pi}{T} \right)^2 &= \frac{|q|\lambda}{2\pi \varepsilon_0 m R^2}
+        \end{align*}`,
+
+    final_result: String.raw`
+        \begin{align*}
+        T &= 2\pi R \sqrt{ \frac{2\pi \varepsilon_0 m}{|q|\lambda} } \quad [\mathrm{s}]
+        \end{align*}`,
+};
+---
+
+<Layout title="Problema Órbita - Física">
+    <div class="main-layout">
+        <div class="content-scroll">
+            
+            <StepBox label="Enunciado del Problema" vizSrc="about:blank" vizId="viz-step-0">
+                <div class="step-content">
+                    <div class="step-text-col" style="flex: 1; border: none; text-align: left; color: white;">
+                        <p>Una carga lineal infinita {math.lambda} está localizada a lo largo del eje Z.</p>
+                        <p style="margin-top: 0.5rem;">Una masa {math.mass} que posee una carga {math.q} minúscula de signo opuesto al de {math.lambda}, 
+                        se encuentra en una órbita circular en el plano XY alrededor de la carga lineal.</p>
+                        <p style="margin-top: 0.5rem;">Deducir una expresión para el periodo de la órbita en función de {math.mass}, {math.q}, {math.R} y {math.lambda}, 
+                        en donde {math.R} es el radio de la órbita.</p>
+                    </div>
+                </div>
+            </StepBox>
+
+            <StepBox label="Paso 1: Campo Eléctrico" vizSrc="about:blank" vizId="viz-step-1">
+                <div class="step-content">
+                    <div class="step-text-col text-yellow-theme">
+                        <p>Primero, determinamos el campo eléctrico {math.step1_E_vec} generado por la línea infinita de carga a una distancia radial {math.R}.</p>
+                    </div>
+                    <div class="step-math-col">
+                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step1_eq} />
+                    </div>
+                </div>
+            </StepBox>
+
+            <StepBox label="Paso 2: Dinámica de Fuerzas" vizSrc="about:blank" vizId="viz-step-2">
+                <div class="step-content">
+                    <div class="step-text-col text-yellow-theme">
+                        <p>Para que la masa describa una órbita circular, la fuerza eléctrica de atracción {math.step2_Fe} debe actuar como la fuerza centrípeta {math.step2_Fc} necesaria.</p>
+                    </div>
+                    <div class="step-math-col">
+                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step2_eq} />
+                    </div>
+                </div>
+            </StepBox>
+
+            <StepBox label="Paso 3: Calcular el Periodo" vizSrc="about:blank" vizId="viz-step-3">
+                <div class="step-content">
+                    <div class="step-text-col text-yellow-theme">
+                        <p>Relacionamos la velocidad angular $\omega$ con el periodo {math.step3_T} mediante la expresión $\omega = 2\pi / T$ y despejamos:</p>
+                    </div>
+                    <div class="step-math-col">
+                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step3_eq} />
+                    </div>
+                </div>
+            </StepBox>
+
+            <StepBox label="Resultados y Conclusiones">
+                <div class="step-content">
+                    <div class="step-math-col">
+                        <div style="font-size: 1.1em; overflow-x: auto; text-align: center;" set:html={math.final_result} />
+                    </div>
+                </div>
+                <div class="step-content" style="margin-top: 2rem;">
+                    <div style="flex: 1; color: #cfcfc2;">
+                        <h4 style="margin-bottom: 1rem; color: var(--accent-green);">Conclusiones</h4>
+                        <ul style="list-style-type: disc; padding-left: 1.5rem; text-align: left;">
+                            <li style="margin-bottom: 0.5rem;">
+                                El periodo depende de la raíz cuadrada de la masa <span set:html={String.raw`($T \propto \sqrt{m}$)`} /> y es inversamente proporcional a la raíz de la carga y densidad <span set:html={String.raw`($T \propto 1/\sqrt{q\lambda}$)`} />.
+                            </li>
+                            <li style="margin-bottom: 0.5rem;">
+                                A mayor radio {math.R}, mayor es el periodo.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </StepBox>
+
+        </div>
+    </div>
+</Layout>
