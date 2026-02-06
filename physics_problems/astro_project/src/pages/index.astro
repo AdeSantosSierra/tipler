@@ -80,7 +80,7 @@ const math = {
         \begin{align*}
         \vec{F} &= \left( \frac{Q\lambda}{2\pi \varepsilon_0 L} \right) \ln\left( \frac{d+L}{d} \right) \vec{\jmath} \quad [\mathrm{N}]
         \end{align*}`,
-    step4_parallel_eq: String.raw`$$ \vec{F}_{\parallel} = Q \cdot \vec{E} = \frac{Q\lambda}{2\pi \varepsilon_0 d} \vec{\jmath} $$`,
+    step4_parallel_eq: String.raw`$$ \vec{F} = Q \cdot \vec{E} = \frac{Q\lambda}{2\pi \varepsilon_0 d} \vec{\jmath} \quad [\mathrm{N}] $$`,
     step4_vec_E_inline: String.raw`$\vec{E}$`
 };
 ---
@@ -231,7 +231,7 @@ const math = {
                         <h4 style="margin-bottom: 1rem; color: var(--accent-green);">Conclusiones</h4>
                         <ul style="list-style-type: disc; padding-left: 1.5rem; text-align: left;">
                             <li style="margin-bottom: 0.5rem;">
-                                En este caso, la fuerza tiene que calcularse mediante integración pues el campo <span class="math-highlight-red" set:html={math.step4_vec_E_inline} /> varía en la dirección de la barra.
+                                En este caso, la fuerza tiene que calcularse mediante integración pues el campo <span set:html={math.step4_vec_E_inline} /> varía en la dirección de la barra.
                             </li>
                             <li style="margin-bottom: 0.5rem;">
                                 Si la barra estuviese <strong>paralela</strong> a la línea de carga infinita (a una distancia $d$), el cálculo sería mucho más sencillo, ya que el campo sería constante en todos los puntos de la barra.
