@@ -78,14 +78,23 @@ const math = {
     step1_Lp_tooltip_text: String.raw`Esta longitud es diferente a la longitud de la barra, que es $L$. No se tienen que confundir.`,
     step4_final_eq: String.raw`
         \begin{align*}
-        \vec{F} &= \left( \frac{Q\lambda}{2\pi \varepsilon_0 L} \right) \ln\left( \frac{d+L}{d} \right) \vec{\jmath} \quad [\mathrm{N}]
+        \vec{F} &= \left( \frac{Q\lambda}{2\pi \varepsilon_0 L} \right) \ln\left( \frac{d+L}{d} \right) \vec{\jmath} \quad \left[ \unit{N} \right]
         \end{align*}`,
-    step4_parallel_eq: String.raw`$$ \vec{F} = Q \cdot \vec{E} = \frac{Q\lambda}{2\pi \varepsilon_0 d} \vec{\jmath} \quad [\mathrm{N}] $$`,
+    step4_parallel_eq: String.raw`$$ \vec{F} = Q \cdot \vec{E} = \frac{Q\lambda}{2\pi \varepsilon_0 d} \vec{\jmath} \quad \left[ \unit{N} \right] $$`,
     step4_vec_E_inline: String.raw`$\vec{E}$`
 };
 ---
 
 <Layout title="Problema Barra - Física">
+    <!-- Menu Button -->
+    <button id="menu-button" class="menu-button" aria-label="Menú de navegación">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </button>
+
     <div class="main-layout">
         <div class="content-scroll">
             <!-- Step 0: Enunciado (Problem Statement) -->
@@ -221,8 +230,8 @@ const math = {
             <!-- Step 4: Conclusions -->
             <StepBox label="Resultado final y conclusiones">
                 <div class="step-content">
-                    <div class="step-math-col">
-                        <div style="font-size: 1.1em; overflow-x: auto; text-align: center;" set:html={math.step4_final_eq} />
+                    <div class="step-text-col text-yellow-theme" style="flex: 1; text-align: center; border: none;">
+                        <div style="font-size: 1.3em; overflow-x: auto;" set:html={math.step4_final_eq} />
                     </div>
                 </div>
 
@@ -269,12 +278,27 @@ const math = {
         <div set:html={math.gauss_tooltip_eq} />
     </div>
 
-    <!-- Modal -->
+    <!-- Math Modal -->
     <div id="math-modal" class="modal-overlay">
         <div class="modal-content">
             <span class="modal-close">&times;</span>
             <div id="modal-body-text">
                 <!-- Content injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Modal -->
+    <div id="nav-modal" class="modal-overlay">
+        <div class="modal-content nav-modal-content">
+            <span class="modal-close nav-modal-close">&times;</span>
+            <h3 style="color: var(--accent-green); margin-top: 0; margin-bottom: 1.5rem;">Navegación</h3>
+            <div class="nav-options">
+                <button class="nav-option" data-option="1">Opción 1</button>
+                <button class="nav-option" data-option="2">Opción 2</button>
+                <button class="nav-option" data-option="3">Opción 3</button>
+                <button class="nav-option" data-option="4">Opción 4</button>
+                <button class="nav-option nav-option-next" data-option="next">Siguiente problema</button>
             </div>
         </div>
     </div>
@@ -402,6 +426,39 @@ const math = {
                 closeBtn.addEventListener('click', () => modal.classList.remove('active'));
                 modal.addEventListener('click', (e) => {
                     if (e.target === modal) modal.classList.remove('active');
+                });
+            }
+        });
+
+        // Navigation Modal Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const navModal = document.getElementById('nav-modal');
+            const menuButton = document.getElementById('menu-button');
+            const navCloseBtn = document.querySelector('.nav-modal-close');
+            const navOptions = document.querySelectorAll('.nav-option');
+
+            if (menuButton && navModal) {
+                menuButton.addEventListener('click', () => {
+                    navModal.classList.add('active');
+                });
+
+                navCloseBtn.addEventListener('click', () => {
+                    navModal.classList.remove('active');
+                });
+
+                navModal.addEventListener('click', (e) => {
+                    if (e.target === navModal) {
+                        navModal.classList.remove('active');
+                    }
+                });
+
+                navOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        const optionValue = option.dataset.option;
+                        console.log('Selected option:', optionValue);
+                        // Aquí puedes agregar la lógica de navegación
+                        navModal.classList.remove('active');
+                    });
                 });
             }
         });
