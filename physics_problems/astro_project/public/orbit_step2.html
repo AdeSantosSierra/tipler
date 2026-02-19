@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orbit Step 2: Fuerzas en Equilibrio</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: transparent;
+      /* Use CSS transparent */
+    }
+
+    #viz-container {
+      width: 100%;
+      height: 100vh;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+
+<body>
+  <div id="viz-container"></div>
+
+  <script type="module">
+    import { ThreeComponents } from './js/three-components.js';
+
+    // --- Escena, Cámara y Renderizador ---
+    const scene = new THREE.Scene();
+    scene.background = null;
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(15, 10, 15);
+    camera.lookAt(0, 0, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('viz-container').appendChild(renderer.domElement);
+
+    // --- Controles ---
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+
+    // --- Luces ---
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+    scene.add(ambientLight);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    dirLight.position.set(10, 20, 10);
+    scene.add(dirLight);
+
+    // --- Elementos Comunes ---
+    const lineLength = 24;
+    ThreeComponents.createInfiniteLine(scene, lineLength, 0.1, 0xffffff);
+    ThreeComponents.createSmallWhiteAxes(scene, new THREE.Vector3(-8, -5, -lineLength / 2), 4);
+
+    // Órbita
+    const orbitRadius = 6;
+    const orbitCurve = new THREE.EllipseCurve(0, 0, orbitRadius, orbitRadius, 0, 2 * Math.PI, false, 0);
+    const points = orbitCurve.getPoints(200); // More points for smoother finer dashes
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const material = new THREE.LineDashedMaterial({
+      color: 0xfd971f, // Monokai Orange
+      dashSize: 0.2,   // Smaller dashes
+      gapSize: 0.1,    // Smaller gaps
+      scale: 1,
+      opacity: 0.4,
+      transparent: true
+    });
+    const orbitLine = new THREE.Line(geometry, material);
+    orbitLine.computeLineDistances();
+    scene.add(orbitLine);
+
+    // Partícula
+    const particleGeo = new THREE.SphereGeometry(0.3, 32, 32);
+    const particleMat = new THREE.MeshStandardMaterial({ color: 0xffffff }); // Blanca
+    const particle = new THREE.Mesh(particleGeo, particleMat);
+    scene.add(particle);
+
+    // --- Visualización del Campo Eléctrico (Puntos) ---
+    // Puntos en el plano XY (z=0) utilizando InstancedMesh para mejor rendimiento
+    // Más grandes y cálidos cerca del eje Z (r pequeño), más pequeños y fríos lejos.
+
+    // Configuración del grid circular
+    const maxRadius = 14;
+    const minRadius = 0.8;
+    const rStep = 0.5; // Paso radial
+    const arcSpacing = 0.5; // Espaciado entre puntos a lo largo de la circunferencia
+
+    // Estimar número de puntos (aproximación)
+    // Area ~ PI*R^2. Area por punto ~ rStep * arcSpacing.
+    const countEstimate = Math.ceil((Math.PI * maxRadius * maxRadius) / (rStep * arcSpacing));
+
+    // Usamos PlaneGeometry para hacer líneas (rectángulos alargados)
+    // Longitud base 1, grosor 0.15
+    const lineGeo = new THREE.PlaneGeometry(1, 0.15);
+    const lineMat = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.6, // Mayor opacidad para que se vean bien las líneas
+      side: THREE.DoubleSide
+    });
+
+    const fieldMesh = new THREE.InstancedMesh(lineGeo, lineMat, countEstimate + 100);
+    fieldMesh.instanceMatrix.setUsage(THREE.StaticDrawUsage);
+    scene.add(fieldMesh);
+
+    const dummy = new THREE.Object3D();
+    const color = new THREE.Color();
+
+    // Gradient: Red (Center/High) -> Yellow (Edge/Low)
+    // "Al revés, de rojo a amarillo" interpretation:
+    // Center (r small) = Red
+    // Edge (r large) = Yellow
+    const cCenter = new THREE.Color(0xff0000); // Red
+    const cEdge = new THREE.Color(0xffff00);   // Yellow
+
+    let i = 0;
+
+    // Bucle Polar: Radio y Ángulo
+    for (let r = minRadius; r <= maxRadius; r += rStep) {
+      // Calcular cuántos puntos caben en esta circunferencia para mantener densidad uniforme
+      const circumference = 2 * Math.PI * r;
+      const numPoints = Math.floor(circumference / arcSpacing);
+
+      for (let j = 0; j < numPoints; j++) {
+        const theta = (j / numPoints) * 2 * Math.PI;
+
+        const x = r * Math.cos(theta);
+        const y = r * Math.sin(theta);
+        const z = 0;
+
+        dummy.position.set(x, y, z);
+
+        // Orientar radialmente: el ángulo es theta
+        dummy.rotation.z = theta;
+
+        // Escala proporcional a 1/r
+        const kVisual = 1.2;
+        const scale = (kVisual / r) * 0.4;
+        dummy.scale.set(scale, scale, 1);
+        dummy.updateMatrix();
+
+        if (i < fieldMesh.count) {
+          fieldMesh.setMatrixAt(i, dummy.matrix);
+
+          // Normalizar r 
+          const t = (r - minRadius) / (maxRadius - minRadius);
+
+          // Interpolate Red -> Yellow
+          color.lerpColors(cCenter, cEdge, Math.pow(t, 0.4));
+
+          fieldMesh.setColorAt(i, color);
+          i++;
+        }
+      }
+    }
+    fieldMesh.count = i;
+    fieldMesh.instanceMatrix.needsUpdate = true;
+    if (fieldMesh.instanceColor) fieldMesh.instanceColor.needsUpdate = true;
+
+    // --- Elementos Step 2: Vectores de Fuerza y Velocidad ---
+    // Fe (Eléctrica, atractiva -> Hacia el centro) - Color Orange (#fd971f)
+    // v (Velocidad, tangencial) - Color Purple (#ae81ff)
+
+    const arrowLength = 3;
+    const arrowHeadLength = 0.6;
+    const arrowHeadWidth = 0.3;
+
+    // Fe Vector (Orange)
+    const vectorFe = new THREE.ArrowHelper(
+      new THREE.Vector3(-1, 0, 0), // Dir inicial
+      new THREE.Vector3(orbitRadius, 0, 0), // Pos inicial
+      arrowLength,
+      0xfd971f,
+      arrowHeadLength,
+      arrowHeadWidth
+    );
+    scene.add(vectorFe);
+
+    const labelFe = ThreeComponents.createLabel(scene, 'Fe', new THREE.Vector3(0, 0, 0), '#fd971f', 48, 1);
+
+
+
+
+
+    // Animación
+    const period = 10; // Más lento (antes 5)
+    const angularSpeed = (2 * Math.PI) / period;
+    const clock = new THREE.Clock(); // Use global clock for consistency
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const time = clock.getElapsedTime();
+      const angle = angularSpeed * time;
+
+      const x = orbitRadius * Math.cos(angle);
+      const y = orbitRadius * Math.sin(angle);
+      const z = 0;
+      const pos = new THREE.Vector3(x, y, z);
+
+      // Actualizar Partícula
+      particle.position.copy(pos);
+
+      // Calcular direcciones
+      // Hacia el centro (Fe): Dir = -Pos normalizado
+      const dirIn = pos.clone().negate().normalize();
+
+
+
+      // Actualizar Vector Fe
+      vectorFe.position.copy(pos);
+      vectorFe.setDirection(dirIn);
+
+
+
+      // Actualizar Etiquetas
+      // Fe label: Al lado del vector Fe
+      const offsetFe = dirIn.clone().multiplyScalar(arrowLength * 0.6).add(new THREE.Vector3(0, 0, 0.5));
+      labelFe.position.copy(pos).add(offsetFe);
+
+
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    animate();
+  </script>
+</body>
+
+</html>

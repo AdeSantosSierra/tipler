@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import StepBox from '../components/StepBox.astro';
+import ElectricFieldInfiniteLineCharge from '../components/master/ElectricFieldInfiniteLineCharge.astro';
 
 const math = {
     lambda: String.raw`\(\lambda\)`,
@@ -44,23 +45,43 @@ const math = {
     gauss_tooltip_eq: String.raw`$$ \oint \vec{E} \cdot d\vec{S} = \frac{Q_{\text{enc}}}{\varepsilon_0} $$`,
     radial_tooltip_text: String.raw`Ponemos $\vec{u}_r$ porque el campo es radial`,
     step1_Lp_tooltip_text: String.raw`Esta longitud es la de la superficie gaussiana (cilindro imginario).`,
+    minus_tooltip_text: String.raw`Tiene signo menos porque es un vector que apunta hacia el centro (sentido opuesto a $\vec{u}_r$).`,
+    velocity_tooltip_text: String.raw`Relación entre velocidad lineal y angular: $v = \omega R$`,
     
-    step2_Fe: String.raw`\(F_e\)`,
-    step2_Fc: String.raw`\(F_c\)`,
-    step2_eq: String.raw`
+    step2_row1_Eq: String.raw`
+        \begin{align*}
+        \vec{F}_e &= \class{hover-trigger minus-tooltip}{\bbox[4px,border:1px dashed #f92672;border-radius:4px,#3d292e]{\boldsymbol{-}}} q\vec{E} \vec{u}_r \quad [\mathrm{N}]
+        \end{align*}`,
+    step2_row2_Eq: String.raw`
+        \begin{align*}
+        \vec{F}_c &= \class{hover-trigger minus-tooltip}{\bbox[4px,border:1px dashed #f92672;border-radius:4px,#3d292e]{\boldsymbol{-}}} \frac{mv^2}{R} \vec{u}_r \\[10pt]
+        &= - m \class{hover-trigger velocity-tooltip}{\bbox[4px,border:1px dashed #f92672;border-radius:8px,#3d292e]{\omega^2 R}} \vec{u}_r \quad [\mathrm{N}]
+        \end{align*}`,
+    step2_row3_Eq: String.raw`
         \begin{align*}
         F_e &= F_c \\[10pt]
-        |q| E &= m \omega^2 R \\[10pt]
+        |q| \class{hover-trigger field-tooltip}{\bbox[4px,border:1px dashed #f92672;border-radius:8px,#3d292e]{E}} &= m \omega^2 R \\[10pt]
         \frac{|q|\lambda}{2\pi \varepsilon_0 R} &= m \omega^2 R
         \end{align*}`,
+    
+    field_tooltip_text: String.raw`Evaluamos el campo en la posición de la carga ($r=R$): $E = \frac{\lambda}{2\pi \varepsilon_0 R}$`,
 
     step3_T: String.raw`\(T\)`,
     step3_eq: String.raw`
         \begin{align*}
-        \omega^2 &= \frac{|q|\lambda}{2\pi \varepsilon_0 m R^2} \\[10pt]
-        \left( \frac{2\pi}{T} \right)^2 &= \frac{|q|\lambda}{2\pi \varepsilon_0 m R^2}
+        \frac{|q|\lambda}{2\pi \varepsilon_0 R} &= m \omega^2 R \\[10pt]
+        \omega^2 &= \frac{|q|\lambda}{2\pi \varepsilon_0 m R^2}
         \end{align*}`,
-
+    step3_omega_rel: String.raw`
+        \begin{align*}
+        \omega &= \frac{2\pi}{T}
+        \end{align*}`,
+    step3_row2_combined: String.raw`
+        \begin{align*}
+        \left( \frac{2\pi}{T} \right)^2 &= \frac{|q|\lambda}{2\pi \varepsilon_0 m R^2} \\[10pt]
+        T &= 2\pi R \sqrt{ \frac{2\pi \varepsilon_0 m}{|q|\lambda} } \quad [\mathrm{s}]
+        \end{align*}`,
+    
     final_result: String.raw`
         \begin{align*}
         T &= 2\pi R \sqrt{ \frac{2\pi \varepsilon_0 m}{|q|\lambda} } \quad [\mathrm{s}]
@@ -72,7 +93,7 @@ const math = {
     <div class="main-layout">
         <div class="content-scroll">
             
-            <StepBox label="Enunciado del Problema" vizSrc="/orbit_interactive.html" vizId="viz-step-0">
+            <StepBox label="Enunciado del Problema" vizSrc="/orbit_scheme.html" vizId="viz-step-0">
                 <div class="step-content">
                     <div class="step-text-col" style="flex: 1; border: none; text-align: left; color: white;">
                         <p>Una carga lineal infinita {math.lambda} está localizada a lo largo del eje Z.</p>
@@ -84,86 +105,135 @@ const math = {
                 </div>
             </StepBox>
 
-            <StepBox label="Paso 1: Calcular Campo Eléctrico" vizSrc="/infinite_field.html" vizId="viz-step-1">
-                <!-- 1. Flux Integral -->
-                <div class="step-content">
-                    <div class="step-text-col text-yellow-theme">
-                        <p>Calcula el flujo del campo Eléctrico ({math.step1_E_vec}) que atraviesa la superficie
-                            gaussiana {math.step1_S} (de radio {math.step1_r} y longitud <span class="hover-trigger Lp-tooltip" style="border-bottom: 1px dashed var(--accent-red); cursor: help;">{math.step1_Lp}</span>).</p>
+            <StepBox label="Paso 1: Calcular Campo Eléctrico">
+                <div class="step-content-wrapper">
+                    <div class="step-viz-col">
+                        <ElectricFieldInfiniteLineCharge id="viz-step-1" />
                     </div>
-                    <div class="step-math-col">
-                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step1_flux_eq} />
-                    </div>
-                </div>
+                    <div class="step-text-math-col">
+                        <!-- 1. Flux Integral -->
+                        <div class="step-content">
+                            <div class="step-text-col text-yellow-theme">
+                                <p>Calcula el flujo del campo Eléctrico ({math.step1_E_vec}) que atraviesa la superficie
+                                    gaussiana {math.step1_S} (de radio {math.step1_r} y longitud <span class="hover-trigger Lp-tooltip" style="border-bottom: 1px dashed var(--accent-red); cursor: help;">{math.step1_Lp}</span>).</p>
+                            </div>
+                            <div class="step-math-col">
+                                <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step1_flux_eq} />
+                            </div>
+                        </div>
 
-                <!-- 2. Enclosed Charge -->
-                <div class="step-content">
-                    <div class="step-text-col text-yellow-theme">
-                        <p>Las unidades de {math.step1_lambda_units} son {math.step1_Qm}.</p>
-                    </div>
-                    <div class="step-math-col">
-                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step1_Qenc_eq} />
-                    </div>
-                </div>
+                        <!-- 2. Enclosed Charge -->
+                        <div class="step-content">
+                            <div class="step-text-col text-yellow-theme">
+                                <p>Las unidades de {math.step1_lambda_units} son {math.step1_Qm}.</p>
+                            </div>
+                            <div class="step-math-col">
+                                <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step1_Qenc_eq} />
+                            </div>
+                        </div>
 
-                <!-- 3. Gauss Law Relation & Scalar Result -->
-                <div class="step-content">
-                    <div class="step-text-col text-yellow-theme">
-                        <p>Según la <span class="hover-trigger" data-tooltip="tooltip-gauss" style="border-bottom: 1px dashed var(--accent-red); cursor: help;">Ley de Gauss</span>, podemos relacionar ambas expresiones y despejar {math.step1_gauss_E}.</p>
-                    </div>
-                    <div class="step-math-col">
-                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step1_gauss_eq} />
-                    </div>
-                </div>
+                        <!-- 3. Gauss Law Relation & Scalar Result -->
+                        <div class="step-content">
+                            <div class="step-text-col text-yellow-theme">
+                                <p>Según la <span class="hover-trigger" data-tooltip="tooltip-gauss" style="border-bottom: 1px dashed var(--accent-red); cursor: help;">Ley de Gauss</span>, podemos relacionar ambas expresiones y despejar {math.step1_gauss_E}.</p>
+                            </div>
+                            <div class="step-math-col">
+                                <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step1_gauss_eq} />
+                            </div>
+                        </div>
 
-                <!-- 4. Vector Result -->
-                <div class="step-content">
-                    <div class="step-text-col text-yellow-theme">
-                        <p>Finalmente:</p>
-                    </div>
-                    <div class="step-math-col">
-                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step1_final_eq} />
-                    </div>
-                </div>
-            </StepBox>
-
-            <StepBox label="Paso 2: Dinámica de Fuerzas" vizSrc="about:blank" vizId="viz-step-2">
-                <div class="step-content">
-                    <div class="step-text-col text-yellow-theme">
-                        <p>Para que la masa describa una órbita circular, la fuerza eléctrica de atracción {math.step2_Fe} debe actuar como la fuerza centrípeta {math.step2_Fc} necesaria.</p>
-                    </div>
-                    <div class="step-math-col">
-                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step2_eq} />
+                        <!-- 4. Vector Result -->
+                        <div class="step-content">
+                            <div class="step-text-col text-yellow-theme">
+                                <p>Finalmente:</p>
+                            </div>
+                            <div class="step-math-col">
+                                <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step1_final_eq} />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </StepBox>
 
-            <StepBox label="Paso 3: Calcular el Periodo" vizSrc="about:blank" vizId="viz-step-3">
-                <div class="step-content">
+            <StepBox label="Paso 2: Fuerzas en Equilibrio" vizSrc="/orbit_step2.html" vizId="viz-step-2">
+                <!-- Row 1 -->
+                <div class="step-content" style="padding-bottom: 1.5rem;">
                     <div class="step-text-col text-yellow-theme">
-                        <p>Relacionamos la velocidad angular $\omega$ con el periodo {math.step3_T} mediante la expresión $\omega = 2\pi / T$ y despejamos:</p>
+                        <p>La masa {math.mass} y carga {math.q} sufre una fuerza eléctrica que viene definida por la Ley de Coulomb.</p>
                     </div>
                     <div class="step-math-col">
-                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step3_eq} />
+                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step2_row1_Eq} />
                     </div>
+                </div>
+
+                <!-- Row 2 -->
+                <div class="step-content" style="padding-bottom: 1.5rem;">
+                    <div class="step-text-col text-yellow-theme">
+                        <p>Por otro lado, el giro alrededor de la barra se debe a una fuerza centrípeta</p>
+                    </div>
+                    <div class="step-math-col">
+                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step2_row2_Eq} />
+                    </div>
+                </div>
+
+                <!-- Row 3 -->
+                <div class="step-content">
+                    <div class="step-text-col text-yellow-theme">
+                        <p>Ambas fuerzas son iguales:</p>
+                    </div>
+                    <div class="step-math-col">
+                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step2_row3_Eq} />
+                    </div>
+                </div>
+            </StepBox>
+
+            <StepBox label="Paso 3: Calcular el Periodo">
+                 <div class="step-content" style="display: flex; flex-direction: column; gap: 4rem;">
+                    
+                    <!-- Row 1 -->
+                    <div style="display: flex; flex-direction: row; gap: 2rem; align-items: stretch;">
+                        <div class="step-text-col text-yellow-theme" style="flex: 1; text-align: left; display: flex; align-items: center;">
+                            <p>Partiendo de la ecuación anterior, despejamos la velocidad angular $\omega$.</p>
+                        </div>
+                        <div class="step-math-col" style="flex: 1.2; display: flex; align-items: center; justify-content: center;">
+                             <div style="font-size: 1.1em;" set:html={math.step3_eq} />
+                        </div>
+                    </div>
+
+                    <!-- Row 2 -->
+                    <div style="display: flex; flex-direction: row; gap: 2rem; align-items: stretch;">
+                        <div class="step-text-col text-yellow-theme" style="flex: 1; text-align: left; display: flex; align-items: center;">
+                            <p>Sustituyendo <span style="display: inline-block; vertical-align: middle; margin: 0 5px;">{'$\\displaystyle \\omega = \\frac{2\\pi}{T}$'}</span> podemos despejar finalmente el periodo de la circunferencia que describe la partícula.</p>
+                        </div>
+                        <div class="step-math-col" style="flex: 1.2; display: flex; align-items: center; justify-content: center;">
+                             <div style="font-size: 1.1em;" set:html={math.step3_row2_combined} />
+                         </div>
+                    </div>
+
                 </div>
             </StepBox>
 
             <StepBox label="Resultados y Conclusiones">
-                <div class="step-content">
-                    <div class="step-math-col">
+                <div class="step-content" style="flex-direction: column; gap: 0;">
+                    <div class="step-text-col text-yellow-theme" style="width: 100%; border-right: none; padding-right: 0; margin-bottom: -1rem; text-align: center;">
+                        <p>Y finalmente, por lo tanto, el periodo (tiempo que tarda en dar una vuelta completa) de la partícula de masa {math.mass} y carga {math.q} que orbita alrededor de la carga lineal {math.lambda} es:</p>
+                    </div>
+                    <div class="step-math-col" style="margin-top: 0;">
                         <div style="font-size: 1.1em; overflow-x: auto; text-align: center;" set:html={math.final_result} />
                     </div>
                 </div>
-                <div class="step-content" style="margin-top: 2rem;">
+                <div class="step-content" style="margin-top: 0.5rem;">
                     <div style="flex: 1; color: #cfcfc2;">
                         <h4 style="margin-bottom: 1rem; color: var(--accent-green);">Conclusiones</h4>
                         <ul style="list-style-type: disc; padding-left: 1.5rem; text-align: left;">
-                            <li style="margin-bottom: 0.5rem;">
-                                El periodo depende de la raíz cuadrada de la masa <span set:html={String.raw`($T \propto \sqrt{m}$)`} /> y es inversamente proporcional a la raíz de la carga y densidad <span set:html={String.raw`($T \propto 1/\sqrt{q\lambda}$)`} />.
+                             <li style="margin-bottom: 0.5rem;">
+                                El periodo depende de la raíz cuadrada de la masa <span set:html={String.raw`($T \propto \sqrt{m}$)`} />: a mayor masa, mayor periodo (más lenta).
                             </li>
                             <li style="margin-bottom: 0.5rem;">
-                                A mayor radio {math.R}, mayor es el periodo.
+                                Es inversamente proporcional a la raíz de la carga y la densidad lineal <span set:html={String.raw`($T \propto 1/\sqrt{q\lambda}$)`} />: a mayor carga o densidad, menor periodo (más rápida).
+                            </li>
+                            <li style="margin-bottom: 0.5rem;">
+                                A mayor radio {math.R}, mayor es el periodo (tarda más en dar la vuelta).
                             </li>
                         </ul>
                     </div>
@@ -181,35 +251,55 @@ const math = {
     </div>
 </Layout>
 
-<!-- Tooltips -->
-<div id="tooltip-radial" class="tooltip-box">{math.radial_tooltip_text}</div>
-<div id="tooltip-Lp" class="tooltip-box">{math.step1_Lp_tooltip_text}</div>
+<!-- Navigation Menu Button -->
+<button id="menu-button" class="menu-button" aria-label="Menú de navegación">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+</button>
 
-<!-- Gauss Tooltip -->
-<div id="tooltip-gauss" class="tooltip-box" style="width: 300px; max-width: 300px;">
-    <h4 style="margin: 0 0 0.5rem 0; color: var(--accent-green);">Ley de Gauss</h4>
-    <p style="margin-bottom: 0.5rem;">Relaciona el flujo eléctrico a través de una superficie cerrada con la carga encerrada.</p>
-    <div set:html={math.gauss_tooltip_eq} />
-</div>
-
-<!-- Modal -->
-<div id="math-modal" class="modal-overlay">
-    <div class="modal-content">
-        <span class="modal-close">&times;</span>
-        <div id="modal-body-text">
-            <!-- Content injected via JS -->
+<!-- Navigation Modal -->
+<div id="nav-modal" class="modal-overlay">
+    <div class="modal-content nav-modal-content">
+        <span class="modal-close nav-modal-close">&times;</span>
+        <h3 style="color: var(--accent-green); margin-top: 0; margin-bottom: 1.5rem;">Problemas Disponibles</h3>
+        <div class="nav-options">
+            <a href="/" class="nav-option">Problema 1: Barra Cargada</a>
+            <a href="/problema_orbita" class="nav-option">Problema 2: Órbita con Carga</a>
         </div>
     </div>
 </div>
 
-<!-- LeaderLine Library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leader-line/1.0.7/leader-line.min.js" is:inline></script>
-
-<!-- Interactive Scripts -->
 <script is:inline>
+    // Navigation Modal Logic
+    document.addEventListener('DOMContentLoaded', () => {
+        const navModal = document.getElementById('nav-modal');
+        const menuButton = document.getElementById('menu-button');
+        const navCloseBtn = document.querySelector('.nav-modal-close');
+        
+        if (menuButton && navModal) {
+            menuButton.addEventListener('click', () => {
+                navModal.classList.add('active');
+            });
+
+            navCloseBtn.addEventListener('click', () => {
+                navModal.classList.remove('active');
+            });
+
+            navModal.addEventListener('click', (e) => {
+                if (e.target === navModal) {
+                    navModal.classList.remove('active');
+                }
+            });
+        }
+    });
+
     // Tooltip Logic
     document.addEventListener('DOMContentLoaded', () => {
         const tooltipOffset = 15;
+
 
         function updatePosition(target, tooltipEl) {
             const rect = target.getBoundingClientRect();
@@ -258,6 +348,15 @@ const math = {
             }
             if (trigger.classList.contains('Lp-tooltip')) {
                 tooltipId = 'tooltip-Lp';
+            }
+            if (trigger.classList.contains('minus-tooltip')) {
+                tooltipId = 'tooltip-minus';
+            }
+            if (trigger.classList.contains('velocity-tooltip')) {
+                tooltipId = 'tooltip-velocity';
+            }
+            if (trigger.classList.contains('field-tooltip')) {
+                tooltipId = 'tooltip-field';
             }
 
             if (tooltipId) {
