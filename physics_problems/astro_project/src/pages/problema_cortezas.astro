@@ -1,0 +1,718 @@
+---
+import Layout from '../layouts/Layout.astro';
+import StepBox from '../components/StepBox.astro';
+import CylindricalShells from '../components/master/CylindricalShells.astro';
+
+// Math constants and strings
+export const math = {
+    sigma1: String.raw`\sigma_1`,
+    sigma2: String.raw`\sigma_2`,
+    R1: String.raw`R_1`,
+    R2: String.raw`R_2`,
+    r: String.raw`r`,
+    E: String.raw`E`,
+    vecE: String.raw`\vec{E}`,
+    
+    // Step 1: r < R1
+    step1_cond: String.raw`r < R_1`,
+    step1_qenc: String.raw`Q_{\text{enc}} = 0`,
+    step1_note: `Las cortezas cilíndricas son huecas — no existe carga en su interior. Cualquier superficie gaussiana con $ r < R_1 $ no encierra carga neta.`,
+    step1_eq: String.raw`
+        \oint \vec{E} \cdot d\vec{S} = \frac{Q_{\text{enc}}}{\varepsilon_0} = 0 \\
+        \vec{E} = 0 \quad \left[\frac{\text{N}}{\text{C}}\right]`,
+        
+    // Step 2: R1 < r < R2
+    step2_cond: String.raw`R_1 < r < R_2`,
+    step2_flujo: String.raw`
+        \oint_S \vec{E} \cdot d\vec{S}
+            = \oint_S E \, dS
+            = E \oint_S dS
+            = \class{math-term-source-flujo}{\bbox[2px, #3d292e, border: 1.5px dashed #f92672; border-radius: 4px]{E (2\pi r L)}}`,
+    step2_carga: String.raw`Q_{\text{enc}} = \sigma_1 (2\pi R_1 L)`,
+    step2_resultado: String.raw`
+        \class{math-term-target-flujo-A flux-hover flux-box-target}{\bbox[2px, #3d292e, border: 1.5px dashed #f92672; border-radius: 4px]{E (2\pi r L)}} = \frac{\sigma_1 (2\pi R_1 L)}{\varepsilon_0} \\
+        \vec{E} = \frac{\sigma_1 R_1}{\varepsilon_0} \frac{1}{r} \vec{u}_r
+            \left[\frac{\text{N}}{\text{C}}\right]`,
+
+    // Step 3: r > R2
+    step3_cond: String.raw`r > R_2`,
+    step3_qenc: String.raw`Q_{\text{enc}} = \sigma_1 (2\pi R_1 L) + \sigma_2 (2\pi R_2 L)`,
+    step3_resultado: String.raw`
+        \class{math-term-target-flujo-B flux-hover flux-box-target}{\bbox[2px, #3d292e, border: 1.5px dashed #f92672; border-radius: 4px]{E (2\pi r L)}} = \frac{2\pi L (\sigma_1 R_1 + \sigma_2 R_2)}{\varepsilon_0} \\
+        \vec{E} = \frac{\sigma_1 R_1 + \sigma_2 R_2}{\varepsilon_0} \frac{1}{r} \vec{u}_r
+            \left[\frac{\text{N}}{\text{C}}\right]`,
+
+    // Apartado B: E = 0 for r > R2
+    stepB_cond: String.raw`\vec{E} = 0 \text{ para } r > R_2`,
+    stepB_start: String.raw`
+        \vec{E}(r) = \begin{cases} 
+        0 & r < R_1 \\
+        \frac{\sigma_1 R_1}{\varepsilon_0} \frac{1}{r} \vec{u}_r & R_1 < r < R_2 \\
+        \frac{\sigma_1 R_1 + \sigma_2 R_2}{\varepsilon_0} \frac{1}{r} \vec{u}_r & r > R_2
+        \end{cases}`,
+    stepB_focus: String.raw`\vec{E} = \frac{\class{numerador-tooltip-target}{\bbox[2px, #3d292e, border: 1.5px dashed #f92672; border-radius: 4px]{\sigma_1 R_1 + \sigma_2 R_2}}}{\varepsilon_0 r} \vec{u}_r = 0`,
+    stepB_ratio_eq: String.raw`
+        \sigma_1 R_1 + \sigma_2 R_2 = 0 \\
+        \sigma_1 R_1 = -\sigma_2 R_2 \\
+        \frac{\sigma_2}{\sigma_1} = -\frac{R_1}{R_2}`,
+    stepB_E_between: String.raw`\vec{E} = \frac{\sigma_1 R_1}{\varepsilon_0 r} \vec{u}_r = -\frac{\sigma_2 R_2}{\varepsilon_0 r} \vec{u}_r \quad \left[\frac{\text{N}}{\text{C}}\right]`,
+
+    // Conclusions
+    conclusions: String.raw`
+        \vec{E}(r) = \begin{cases} 
+        0 & r < R_1 \\
+        \frac{\sigma_1 R_1}{\varepsilon_0} \frac{1}{r} \vec{u}_r & R_1 < r < R_2 \\
+        \frac{\sigma_1 R_1 + \sigma_2 R_2}{\varepsilon_0} \frac{1}{r} \vec{u}_r & r > R_2
+        \end{cases}`
+};
+---
+
+<Layout title="Problema 3: Cortezas Cilíndricas">
+    <div class="main-layout">
+        <div class="problem-header">
+        </div>
+
+        <StepBox label="Enunciado del Problema" vizSrc="/cylindrical_shells_v2.html?hideGauss=true" vizId="viz-step-0">
+            <div class="step-content">
+                <div class="step-text-col" style="flex: 1; border: none; text-align: left; color: white;">
+                    <p>Consideremos dos cortezas cilíndricas concéntricas infinitamente largas.</p>
+                    <p style="margin-top: 0.5rem;">La corteza interior tiene radio {`$ ` + math.R1 + ` $`} y densidad superficial {`$ ` + math.sigma1 + ` $`}. La exterior tiene radio {`$ ` + math.R2 + ` $`} y densidad superficial {`$ ` + math.sigma2 + ` $`}.</p>
+                    <div style="margin-top: 1rem; color: #cfcfc2;">
+                        <p>(a) Utilizar la Ley de Gauss para hallar el campo eléctrico en las tres regiones.</p>
+                        <p style="margin-top: 0.5rem;" set:html={`(b) ¿Cuál deberá ser el cociente $ \\frac{\\sigma_2}{\\sigma_1} $ y el signo relativo de ambas para que \( \vec{E} \) sea nulo en $r > R_2$? ¿Cuál es entonces el campo eléctrico entre las cortezas?`} />
+                    </div>
+                </div>
+            </div>
+        </StepBox>
+
+        <!-- Apartados Tab Interface -->
+        <div class="apartados-nav">
+            <button class="apartado-tab active" data-target="apartado-a">Apartado A</button>
+            <button class="apartado-tab" data-target="apartado-b">Apartado B</button>
+        </div>
+
+        <div id="apartado-a" class="apartado-section active">
+            <StepBox label={String.raw`Paso 1: Cálculo de $ \vec{E} $ para $ r < R_1 $`}>
+                <div class="step-content-wrapper">
+                    <div class="step-viz-col">
+                        <CylindricalShells id="viz-step-1" r={0.65} />
+                    </div>
+                    <div class="step-text-math-col">
+                        <div class="step-content">
+                            <div class="step-text-col" style="color: #cfcfc2; border-right: 1px dashed #75715e; padding-right: 2.5rem; text-align: right;">
+                                <p>Para un radio {`$ ` + math.r + ` $`} menor que {`$ ` + math.R1 + ` $`}, la superficie gaussiana no encierra ninguna carga.</p>
+                            </div>
+                            <div class="step-math-col">
+                                <div class="qenc-tooltip-container">
+                                    <div class="qenc-red-box-centered">
+                                        <div set:html={String.raw`$$ ${math.step1_qenc} $$`} />
+                                        <div class="qenc-tooltip-content">
+                                            {math.step1_note}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="font-size: 1.1em; overflow-x: auto;" set:html={String.raw`$$ \begin{align*} ${math.step1_eq} \end{align*} $$`} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </StepBox>
+
+            <StepBox label={String.raw`Paso 2: Cálculo de $ \vec{E} $ para $ R_1 < r < R_2 $`}>
+                <div class="step-content-wrapper">
+                    <div class="step-viz-col">
+                        <CylindricalShells id="viz-step-2" r={1.7} />
+                    </div>
+                    <div class="step-text-math-col" style="padding: 0;">
+
+                        <div class="paso2-section">
+                            <div class="paso2-comment">
+                                <p>Por simetría cilíndrica, {`$ ` + math.E + ` $`} es constante y perpendicular en toda la superficie gaussiana, por lo que podemos extraerla de la integral.</p>
+                            </div>
+                            <div class="paso2-math">
+                                <div style="font-size: 1.05em; overflow-x: auto;" set:html={String.raw`$$ \begin{align*} ${math.step2_flujo} \end{align*} $$`} />
+                            </div>
+                        </div>
+
+                        <div class="paso2-section">
+                            <div class="paso2-comment">
+                                <p>La carga encerrada es únicamente la de la corteza interior de radio {`$ ` + math.R1 + ` $`}.</p>
+                            </div>
+                            <div class="paso2-math" style="display: flex; justify-content: center;">
+                                <div class="qenc-tooltip-container-inline">
+                                    <div class="qenc-red-box-simple">
+                                        <div style="font-size: 1.05em; overflow-x: auto;" set:html={`$$ ${math.step2_carga} $$`} />
+                                        <div class="qenc-tooltip-content">
+                                            El término entre paréntesis representa el área lateral del cilindro de radio \(R_1\) y longitud \(L\).
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="paso2-section" style="border-bottom: none;">
+                            <div class="paso2-comment">
+                                <p set:html={`Igualamos los términos anteriores. El campo resultante decae con $ \\frac{1}{r} $ y apunta en dirección radial.`} />
+                            </div>
+                            <div class="paso2-math">
+                                <div style="font-size: 1.05em; overflow-x: auto;" set:html={String.raw`$$ \begin{align*} ${math.step2_resultado} \end{align*} $$`} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </StepBox>
+
+            <StepBox label={String.raw`Paso 3: Cálculo de $ \vec{E} $ para $ r > R_2 $`}>
+                <div class="step-content-wrapper">
+                    <div class="step-viz-col">
+                        <CylindricalShells id="viz-step-3" r={2.8} />
+                    </div>
+                    <div class="step-text-math-col">
+                        <div class="step-content">
+                            <div class="step-text-col" style="color: #cfcfc2; border-right: 1px dashed #75715e; padding-right: 2.5rem; text-align: right;">
+                                <p>La superficie gaussiana encierra a ambas cortezas. La carga total encerrada es la suma de ambas.</p>
+                            </div>
+                            <div class="step-math-col" style="align-items: center; gap: 0.5rem;">
+                                <div class="qenc-tooltip-container-inline">
+                                    <div class="qenc-red-box-simple">
+                                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={String.raw`$$ ${math.step3_qenc} $$`} />
+                                        <div class="qenc-tooltip-content" style="width: 250px;">
+                                            Puede verse como Qenc del primer conductor y Qenc del segundo.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="font-size: 1.1em; overflow-x: auto; width: 100%; display: flex; justify-content: center;" set:html={String.raw`$$ \begin{align*} ${math.step3_resultado} \end{align*} $$`} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </StepBox>
+
+            <StepBox label="Conclusiones: Expresión del Campo Eléctrico">
+                <div class="step-content-wrapper">
+                    <div class="step-text-math-col" style="padding: 0;">
+                        <div class="paso2-section" style="border-bottom: none;">
+                            <div class="paso2-comment" style="color: #f8f8f2;">
+                                <p>Resumen del campo eléctrico en todas las regiones del espacio:</p>
+                            </div>
+                            <div class="paso2-math">
+                                <div style="font-size: 1.4em; color: white;" set:html={String.raw`$$ ${math.conclusions} $$`} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </StepBox>
+        </div>
+
+        <div id="apartado-b" class="apartado-section">
+            <StepBox label={String.raw`Paso 1: Cálculo del cociente de densidades`}>
+                <div class="derivation-container" style="padding: 1rem 0;">
+                    {/* Row 1: Starting Field */}
+                    <div class="derivation-row">
+                        <div class="derivation-col-left" style="color: #cfcfc2;">
+                            <p>Partimos del campo eléctrico que hemos calculado anteriormente en las secciones anteriores:</p>
+                        </div>
+                        <div class="derivation-col-right">
+                            <div style="font-size: 1.1em; width: 100%;" set:html={String.raw`$$ ${math.stepB_start} $$`} />
+                        </div>
+                    </div>
+
+                    {/* Row 2: Focus on r > R2 */}
+                    <div class="derivation-row">
+                        <div class="derivation-col-left" style="color: #cfcfc2;">
+                            <p>Nos centramos en la región exterior {`$ r > R_2 $`} donde buscamos que el campo sea nulo:</p>
+                        </div>
+                        <div class="derivation-col-right">
+                            <div class="numerador-tooltip-container">
+                                <div style="font-size: 1.1em; width: 100%;" set:html={String.raw`$$ ${math.stepB_focus} $$`} />
+                                <div class="numerador-tooltip-content">
+                                    Para que se cumpla la condición de campo nulo, solo el numerador tiene que ser cero.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Row 3: Derivation */}
+                    <div class="derivation-row">
+                        <div class="derivation-col-left" style="color: #cfcfc2;">
+                            <p>Igualamos el numerador a cero para anular la expresión. Resolviendo para el cociente de densidades obtenemos la condición necesaria:</p>
+                        </div>
+                        <div class="derivation-col-right">
+                            <div style="font-size: 1.1em; width: 100%;" set:html={String.raw`$$ \begin{align*} ${math.stepB_ratio_eq} \end{align*} $$`} />
+                        </div>
+                    </div>
+
+                    <div class="derivation-row" style="margin-bottom: 0;">
+                        <div class="derivation-col-left" style="border-right-style: dashed; color: #cfcfc2;">
+                            <p>En estas condiciones, el campo eléctrico entre las cortezas {`$ (R_1 < r < R_2) $`} se puede expresar en función de ambas densidades sustituyendo y simplificando:</p>
+                        </div>
+                        <div class="derivation-col-right">
+                            <div style="font-size: 1.1em; width: 100%;" set:html={String.raw`$$ ${math.stepB_E_between} $$`} />
+                        </div>
+                    </div>
+                </div>
+            </StepBox>
+            </StepBox>
+        </div>
+
+    </div>
+</Layout>
+
+<!-- Navigation Menu Button -->
+<button id="menu-button" class="menu-button" aria-label="Menú de navegación">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+</button>
+
+<!-- Navigation Modal -->
+<div id="nav-modal" class="modal-overlay">
+    <div class="modal-content nav-modal-content">
+        <span class="modal-close nav-modal-close">&times;</span>
+        <h3 style="color: var(--accent-green); margin-top: 0; margin-bottom: 1.5rem;">Problemas Disponibles</h3>
+        <div class="nav-options">
+            <a href="/" class="nav-option">Problema 1: Barra Cargada</a>
+            <a href="/problema_orbita" class="nav-option">Problema 2: Órbita con Carga</a>
+            <a href="/problema_cortezas" class="nav-option">Problema 3: Cortezas Cilíndricas</a>
+        </div>
+    </div>
+</div>
+
+<script is:inline>
+    // Navigation Modal Logic
+    document.addEventListener('DOMContentLoaded', () => {
+        const navModal = document.getElementById('nav-modal');
+        const menuButton = document.getElementById('menu-button');
+        const navCloseBtn = document.querySelector('.nav-modal-close');
+        
+        if (menuButton && navModal) {
+            menuButton.addEventListener('click', () => {
+                navModal.classList.add('active');
+            });
+
+            navCloseBtn.addEventListener('click', () => {
+                navModal.classList.remove('active');
+            });
+
+            navModal.addEventListener('click', (e) => {
+                if (e.target === navModal) {
+                    navModal.classList.remove('active');
+                }
+            });
+        }
+    });
+</script>
+
+<style is:global>
+    .apartados-nav {
+        display: flex;
+        gap: 1rem;
+        margin: 2rem 0;
+        justify-content: center;
+    }
+
+    .apartado-tab {
+        background-color: #3e3d32;
+        border: 1px solid #75715e;
+        color: #f8f8f2;
+        padding: 0.8rem 1.5rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .apartado-tab:hover {
+        background-color: #4e4d42;
+        border-color: var(--accent-green);
+    }
+
+    .apartado-tab.active {
+        background-color: var(--accent-green);
+        color: #272822;
+        border-color: var(--accent-green);
+        font-weight: bold;
+    }
+
+    .apartado-section {
+        display: none !important;
+    }
+
+    .apartado-section.active {
+        display: block !important;
+    }
+
+    /* Derivation Layout Apartado B */
+    .derivation-row {
+        display: flex; 
+        align-items: center; 
+        margin-bottom: 3rem; 
+        gap: 0;
+    }
+
+    .derivation-col-left {
+        flex: 1; 
+        color: #cfcfc2; 
+        font-size: 1.05rem; 
+        line-height: 1.6;
+        padding-right: 2.5rem;
+        border-right: 1px dashed #75715e;
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
+
+    .derivation-col-right {
+        flex: 1; 
+        display: flex; 
+        justify-content: center; 
+        padding-left: 2.5rem;
+        position: relative;
+    }
+
+    /* Tooltip Red Apartado B */
+    .numerador-tooltip-container {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+    /* Interactive Flux Boxes Styling */
+    .flux-hover, .flux-box-target, .math-term-target, .math-term-target-flujo-B, .numerador-tooltip-target {
+        border: 1.5px dashed #f92672;
+        border-radius: 4px;
+        padding: 2px 6px;
+        background: rgba(249, 38, 114, 0.08); /* Faint red background */
+        cursor: help;
+        transition: all 0.2s ease;
+        display: inline-block;
+    }
+
+    .flux-hover:hover, .flux-box-target:hover, .math-term-target:hover, .math-term-target-flujo-B:hover, .numerador-tooltip-target:hover {
+        background: rgba(249, 38, 114, 0.15);
+    }
+
+    .numerador-tooltip-content {
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        bottom: calc(100% + 15px);
+        left: 50%;
+        transform: translateX(-50%);
+        width: 280px;
+        background: #1e1e1a;
+        border: 2px solid #f92672;
+        border-radius: 6px;
+        padding: 0.8rem 1rem;
+        color: #f8f8f2;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        text-align: center;
+        transition: all 0.2s ease;
+        z-index: 100;
+        pointer-events: none;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+    }
+
+    .numerador-tooltip-container:hover .numerador-tooltip-content {
+        visibility: visible;
+        opacity: 1;
+        bottom: calc(100% + 10px);
+    }
+
+    /* Arrow for tooltip */
+    .numerador-tooltip-content::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -8px;
+        border-width: 8px;
+        border-style: solid;
+        border-color: #f92672 transparent transparent transparent;
+    }
+
+    /* Q_enc = 0 tooltip Step 1 */
+    .qenc-tooltip-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 2rem;
+    }
+
+    .qenc-red-box-centered {
+        display: inline-flex;
+        align-items: center;
+        border: 1.5px dashed #f92672;
+        border-radius: 4px;
+        padding: 0.6rem 1.2rem;
+        background: rgba(249, 38, 114, 0.08);
+        color: #f8f8f2;
+        font-size: 1.15em;
+        cursor: help;
+        position: relative;
+    }
+
+    .qenc-tooltip-content {
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        bottom: calc(100% + 12px);
+        left: 50%;
+        transform: translateX(-50%);
+        width: 300px;
+        background: #1e1e1a;
+        border: 1.5px solid #f92672;
+        border-radius: 6px;
+        padding: 0.8rem 1rem;
+        color: #cfcfc2;
+        font-size: 0.85em;
+        line-height: 1.5;
+        transition: all 0.2s ease;
+        z-index: 100;
+        pointer-events: none;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    }
+
+    .qenc-tooltip-content::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -6px;
+        border-width: 6px;
+        border-style: solid;
+        border-color: #f92672 transparent transparent transparent;
+    }
+
+    .qenc-red-box-centered:hover .qenc-tooltip-content {
+        visibility: visible;
+        opacity: 1;
+        bottom: calc(100% + 8px);
+    }
+
+    /* Paso 2 two-column per-subsection layout */
+    .paso2-section {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 0;
+        margin-bottom: 0;
+        align-items: stretch;
+    }
+
+    .paso2-comment {
+        color: #cfcfc2;
+        font-size: 0.95em;
+        line-height: 1.6;
+        padding: 1.2rem 2.5rem 1.2rem 0;
+        border-right: 1px dashed #75715e;
+        text-align: right;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-end;
+    }
+
+    .paso2-math {
+        padding: 1.2rem 2rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .paso2-comment p {
+        margin: 0;
+    }
+
+    /* Simple red box for inline math with tooltip (Step 2) */
+    .qenc-tooltip-container-inline {
+        display: inline-block;
+        position: relative;
+    }
+
+    .qenc-red-box-simple {
+        display: inline-flex;
+        align-items: center;
+        border: 1.5px dashed #f92672;
+        border-radius: 4px;
+        padding: 0.3rem 0.6rem;
+        background: rgba(249, 38, 114, 0.08);
+        cursor: help;
+        position: relative;
+    }
+
+    .qenc-red-box-simple:hover .qenc-tooltip-content {
+        visibility: visible;
+        opacity: 1;
+        bottom: calc(100% + 10px);
+    }
+
+    /* Flux Tooltip */
+    .flux-hover {
+        cursor: help;
+        transition: background 0.2s ease;
+    }
+    
+    .flux-hover:hover {
+        background: rgba(166, 226, 46, 0.15) !important;
+    }
+
+    /* MathJax Class Styling */
+    .flux-box-target {
+        padding: 4px 6px;
+        border: 1px dashed #a6e22e !important;
+        border-radius: 8px;
+        background: rgba(166, 226, 46, 0.08);
+        display: inline-block;
+    }
+
+    #math-global-tooltip {
+        position: fixed;
+        visibility: hidden;
+        opacity: 0;
+        background: #1e1e1a;
+        border: 1.5px solid #a6e22e;
+        border-radius: 6px;
+        padding: 0.6rem 0.8rem;
+        color: #cfcfc2;
+        font-size: 0.85em;
+        z-index: 10001;
+        pointer-events: none;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        transition: opacity 0.2s ease;
+        max-width: 250px;
+        line-height: 1.4;
+    }
+    
+    #math-global-tooltip.active {
+        visibility: visible;
+        opacity: 1;
+    }
+</style>
+
+<div id="math-global-tooltip"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leader-line/1.0.7/leader-line.min.js" is:inline></script>
+
+<script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+        const tabs = document.querySelectorAll('.apartado-tab');
+        const sections = document.querySelectorAll('.apartado-section');
+
+        // Global Math Tooltip Logic
+        const globalTooltip = document.getElementById('math-global-tooltip');
+        
+        function showGlobalTooltip(e, text) {
+            if (!globalTooltip) return;
+            globalTooltip.innerHTML = text;
+            globalTooltip.classList.add('active');
+            updateTooltipPos(e);
+        }
+        
+        function hideGlobalTooltip() {
+            if (!globalTooltip) return;
+            globalTooltip.classList.remove('active');
+        }
+        
+        function updateTooltipPos(e) {
+            if (!globalTooltip || !globalTooltip.classList.contains('active')) return;
+            const x = e.clientX;
+            const y = e.clientY;
+            globalTooltip.style.left = `${x + 15}px`;
+            globalTooltip.style.top = `${y - 20}px`;
+        }
+
+        // Equation Linking Logic
+        function initEquationLinking() {
+            const source = document.querySelector('.math-term-source-flujo');
+            const targetA = document.querySelector('.math-term-target-flujo-A');
+            const targetB = document.querySelector('.math-term-target-flujo-B');
+            
+            const tooltipText = "Definición del flujo eléctrico extraído de la integral de superficie.";
+
+            // We only keep the arrow logic, no tooltip text for these linked terms.
+
+            if (!source) return;
+
+            let lineA = null;
+            let lineB = null;
+
+            const removeLines = () => {
+                if (lineA) { lineA.remove(); lineA = null; }
+                if (lineB) { lineB.remove(); lineB = null; }
+            };
+
+            if (targetA) {
+                targetA.addEventListener('mouseenter', () => {
+                    if (window.LeaderLine && targetA.offsetParent !== null) {
+                        lineA = new LeaderLine(source, targetA, {
+                            color: '#a6e22e',
+                            size: 3,
+                            path: 'grid',
+                            startSocket: 'right',
+                            endSocket: 'right',
+                            startPlug: 'disc',
+                            endPlug: 'arrow3',
+                            dash: { animation: true }
+                        });
+                        lineA.setOptions({ zIndex: 10000 });
+                    }
+                });
+                targetA.addEventListener('mouseleave', () => { if (lineA) { lineA.remove(); lineA = null; } });
+            }
+
+            if (targetB) {
+                targetB.addEventListener('mouseenter', () => {
+                    if (window.LeaderLine && targetB.offsetParent !== null) {
+                        lineB = new LeaderLine(source, targetB, {
+                            color: '#a6e22e',
+                            size: 3,
+                            path: 'grid',
+                            startSocket: 'right',
+                            endSocket: 'right',
+                            startPlug: 'disc',
+                            endPlug: 'arrow3',
+                            dash: { animation: true }
+                        });
+                        lineB.setOptions({ zIndex: 10000 });
+                    }
+                });
+                targetB.addEventListener('mouseleave', () => { if (lineB) { lineB.remove(); lineB = null; } });
+            }
+
+            window.addEventListener('scroll', removeLines);
+            
+            // Tab switch handling: remove lines when switching tabs
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    removeLines();
+                    hideGlobalTooltip();
+                    setTimeout(removeLines, 50); 
+                });
+            });
+        }
+
+        // Wait for MathJax to finish rendering before initializing lines
+        if (window.MathJax && window.MathJax.startup) {
+            window.MathJax.startup.promise.then(() => {
+                setTimeout(initEquationLinking, 500);
+            });
+        } else {
+            setTimeout(initEquationLinking, 1500);
+        }
+
+        // Tab Switching Logic
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = tab.dataset.target;
+
+                tabs.forEach(t => t.classList.remove('active'));
+                sections.forEach(s => s.classList.remove('active'));
+
+                tab.classList.add('active');
+                document.getElementById(target).classList.add('active');
+            });
+        });
+    });
+</script>
