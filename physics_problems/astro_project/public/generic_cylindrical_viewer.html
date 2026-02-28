@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cylindrical Viewer</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="/js/CylindricalEngine.js"></script>
+</head>
+
+<body>
+    <div id="container"></div>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const config = params.get('config') ? JSON.parse(decodeURIComponent(params.get('config'))) : {};
+
+        // Backward compatibility for simple r param
+        if (params.get('r')) {
+            config.gaussian = config.gaussian || {};
+            config.gaussian.radius = parseFloat(params.get('r'));
+        }
+        if (params.get('hideGauss') === 'true') {
+            config.gaussian = config.gaussian || {};
+            config.gaussian.visible = false;
+        }
+
+        window.CylindricalEngine.init(document.getElementById('container'), config);
+    </script>
+</body>
+
+</html>

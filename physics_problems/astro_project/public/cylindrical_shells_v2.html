@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cortezas Cilíndricas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            background-color: transparent;
+        }
+
+        canvas {
+            display: block;
+            background: transparent;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+
+<body>
+    <script>
+        var scene = new THREE.Scene();
+        // No background color — transparent
+
+        var camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(7.5, 5, 8.5);
+        camera.lookAt(0, 0, 0);
+
+        var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setClearColor(0x000000, 0); // fully transparent
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+
+        var controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.08;
+
+        // Constant illumination: remove lights that cause shading
+        // scene.add(new THREE.AmbientLight(0xffffff, 0.45));
+        // var dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
+        // dirLight.position.set(6, 10, 8);
+        // scene.add(dirLight);
+
+        var HEIGHT = 7, R1 = 1.2, R2 = 2.2;
+        var R_G = 0.65; // Default
+
+        // Allow setting R_G from URL ?r=value
+        const urlParams = new URLSearchParams(window.location.search);
+        const rParam = urlParams.get('r');
+        if (rParam) R_G = parseFloat(rParam);
+        const hideGauss = urlParams.get('hideGauss') === 'true';
+
+        // Purple scheme
+        var COLOR_INNER = 0xae81ff;  // Monokai purple
+        var COLOR_OUTER = 0x75507b;  // Dark mauve
+        var COLOR_GAUSS = 0xe2d0f8;  // Pale lavender
+        var COLOR_LABEL = 0xf8f8f2;  // White/Off-white
+
+        // Inner shell
+        scene.add(new THREE.Mesh(
+            new THREE.CylinderGeometry(R1, R1, HEIGHT, 48, 1, true),
+            new THREE.MeshBasicMaterial({ color: COLOR_INNER, side: THREE.DoubleSide, transparent: true, opacity: 0.55, depthWrite: false })
+        ));
+
+        // Outer shell
+        scene.add(new THREE.Mesh(
+            new THREE.CylinderGeometry(R2, R2, HEIGHT, 48, 1, true),
+            new THREE.MeshBasicMaterial({ color: COLOR_OUTER, side: THREE.DoubleSide, transparent: true, opacity: 0.35, depthWrite: false })
+        ));
+
+        // Gaussian surface — solid transparent
+        if (!hideGauss) {
+            scene.add(new THREE.Mesh(
+                new THREE.CylinderGeometry(R_G, R_G, HEIGHT * 0.72, 40, 1, false),
+                new THREE.MeshBasicMaterial({ color: COLOR_GAUSS, side: THREE.DoubleSide, transparent: true, opacity: 0.28, depthWrite: false })
+            ));
+        }
+
+        // Label sprite helper
+        function makeLabel(text, hexColor, fontStyle) {
+            fontStyle = fontStyle || 'Bold';
+            var c = document.createElement('canvas');
+            c.width = 140; c.height = 70;
+            var ctx = c.getContext('2d');
+            ctx.font = fontStyle + ' 46px Georgia';
+            ctx.fillStyle = '#' + hexColor.toString(16).padStart(6, '0');
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, 70, 38);
+
+            var tex = new THREE.CanvasTexture(c);
+            // Fix "weird box" by disabling mipmaps and using linear filtering
+            tex.minFilter = THREE.LinearFilter;
+            tex.magFilter = THREE.LinearFilter;
+
+            var sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+                map: tex,
+                transparent: true,
+                alphaTest: 0.05,
+                depthWrite: false
+            }));
+            sprite.scale.set(0.78, 0.39, 1);
+            return sprite;
+        }
+
+        var AY = HEIGHT * 0.27;
+
+        // R1 — along X
+        scene.add(new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, AY, 0), R1, COLOR_INNER, R1 * 0.15, R1 * 0.06));
+        var lR1 = makeLabel('R₁', COLOR_LABEL); lR1.position.set(R1 + 0.34, AY, 0); scene.add(lR1);
+
+        // R2 — along Z
+        scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, AY, 0), R2, COLOR_OUTER, R2 * 0.1, R2 * 0.05));
+        var lR2 = makeLabel('R₂', COLOR_LABEL); lR2.position.set(0, AY, R2 + 0.37); scene.add(lR2);
+
+        // r — along diagonal 45°
+        if (!hideGauss) {
+            var dd = new THREE.Vector3(1, 0, 1).normalize();
+            scene.add(new THREE.ArrowHelper(dd, new THREE.Vector3(0, AY, 0), R_G, COLOR_LABEL, R_G * 0.22, R_G * 0.09));
+            var de = dd.clone().multiplyScalar(R_G + 0.34);
+            var lr = makeLabel('r', COLOR_LABEL, 'Italic'); lr.position.set(de.x, AY, de.z); scene.add(lr);
+        }
+
+        // L — Vertical length of Gaussian cylinder
+        if (!hideGauss) {
+            var GH = HEIGHT * 0.72;
+            var LX = -R_G - 0.3, LZ = 0.3; // Closer to the Gaussian cylinder
+            scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(LX, 0, LZ), GH / 2, COLOR_LABEL, 0.3, 0.15));
+            scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, -1, 0), new THREE.Vector3(LX, 0, LZ), GH / 2, COLOR_LABEL, 0.3, 0.15));
+            var lL = makeLabel('L', COLOR_LABEL, 'Italic');
+            lL.position.set(LX - 0.34, 0, LZ);
+            scene.add(lL);
+        }
+
+        function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); }
+        animate();
+
+        window.addEventListener('resize', function () {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+
+</html>

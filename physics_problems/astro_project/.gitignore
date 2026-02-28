@@ -22,3 +22,8 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# temp files
+.agent/
+temp_*.txt
+gaussian_surface_trace.json

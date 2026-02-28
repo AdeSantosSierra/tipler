@@ -1,0 +1,43 @@
+            <StepBox label="Paso 1: Calcular Campo Eléctrico" vizSrc="final_interactive.html?v=11" vizId="viz-step-1">
+                <!-- 1. Flux Integral -->
+                <div class="step-content">
+                    <div class="step-text-col text-yellow-theme">
+                        <p>Calcula el flujo del campo Eléctrico ({math.step1_E}) que atraviesa la superficie
+                            gaussiana {math.step1_S} (de radio {math.step1_r} y longitud <span class="hover-trigger Lp-tooltip" style="border-bottom: 1px dashed var(--accent-red); cursor: help;">{math.step1_Lp}</span>).</p>
+                    </div>
+                    <div class="step-math-col">
+                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step1_flux_eq} />
+                    </div>
+                </div>
+
+                <!-- 2. Enclosed Charge -->
+                <div class="step-content">
+                    <div class="step-text-col text-yellow-theme">
+                        <p>Las unidades de {math.step1_lambda_units} son {math.step1_Qm}.</p>
+                    </div>
+                    <div class="step-math-col">
+                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step1_Qenc_eq} />
+                    </div>
+                </div>
+
+                <!-- 3. Gauss Law Relation & Scalar Result -->
+                <div class="step-content">
+                    <div class="step-text-col text-yellow-theme">
+                        <p>Según la <span class="hover-trigger" data-tooltip="tooltip-gauss" style="border-bottom: 1px dashed var(--accent-red); cursor: help;">Ley de Gauss</span>, podemos relacionar ambas expresiones y despejar {math.step1_gauss_E}.</p>
+                    </div>
+                    <div class="step-math-col">
+                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step1_gauss_eq} />
+                    </div>
+                </div>
+
+                <!-- 4. Vector Result -->
+                <div class="step-content">
+                    <div class="step-text-col text-yellow-theme">
+                        <p>Finalmente:</p>
+                    </div>
+                    <div class="step-math-col">
+                        <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step1_final_eq} />
+                    </div>
+                </div>
+            </StepBox>
+

@@ -33,7 +33,9 @@
 
 <body>
     <div id="labels"></div>
-    <script>
+    <script type="module">
+        import { ThreeComponents } from './js/three-components.js';
+
         // --- Escena, Cámara y Renderizador ---
         const scene = new THREE.Scene();
         scene.background = null;
@@ -43,9 +45,8 @@
         camera.lookAt(0, 0, 0);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setClearColor(0x000000, 0); // Transparent
-        document.body.appendChild(renderer.domElement);
+        renderer.setSize(document.getElementById('viz-container').clientWidth, 400); // Use container size
+        document.getElementById('viz-container').appendChild(renderer.domElement);
 
         // --- Controles de Órbita ---
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -61,32 +62,12 @@
         scene.add(directionalLight);
 
         // --- Elementos del Problema ---
+        const lineLength = 24;
+        ThreeComponents.createInfiniteLine(scene, lineLength, 0.2, 0xffffff);
 
-        // 1. Línea Cargada Infinita (Eje Z) - BLANCA
-        const lineLength = 100;
-        const lineGeometry = new THREE.CylinderGeometry(0.3, 0.3, lineLength, 32);
-        const lineMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0x222222 });
-        const lineCharge = new THREE.Mesh(lineGeometry, lineMaterial);
-        lineCharge.rotation.x = Math.PI / 2;
-        scene.add(lineCharge);
-
-        // 2. Ejes de Coordenadas (Pequeños, al final de la barra) - Flechas con Conos
-        const axesOrigin = new THREE.Vector3(0, 0, -lineLength / 2 + 2);
-        const axisLength = 4;
-        const axisHeadLength = 1;
-        const axisHeadWidth = 0.5;
-
-        // Eje X (Rojo)
-        const arrowX = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), axesOrigin, axisLength, 0xff0000, axisHeadLength, axisHeadWidth);
-        scene.add(arrowX);
-
-        // Eje Y (Verde)
-        const arrowY = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), axesOrigin, axisLength, 0x00ff00, axisHeadLength, axisHeadWidth);
-        scene.add(arrowY);
-
-        // Eje Z (Azul)
-        const arrowZ = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), axesOrigin, axisLength, 0x0000ff, axisHeadLength, axisHeadWidth);
-        scene.add(arrowZ);
+        // 2. Ejes de Coordenadas (Blancos con letras)
+        const axesOrigin = new THREE.Vector3(0, 0, -lineLength / 2); // Extremo
+        ThreeComponents.createSmallWhiteAxes(scene, axesOrigin);
 
         // 3. Trayectoria de la Órbita (Círculo discontinuo)
         // Usamos BufferGeometry y LineDashedMaterial

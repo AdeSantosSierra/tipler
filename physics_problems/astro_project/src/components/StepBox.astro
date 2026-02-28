@@ -9,7 +9,7 @@ const { label, vizSrc, vizId } = Astro.props;
 ---
 
 <div class="step-box">
-  <span class="step-label">{label}</span>
+  <span class="step-label" set:html={label}></span>
 
   <div class="step-content-wrapper">
     {vizSrc && (
