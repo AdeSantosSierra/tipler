@@ -12,5 +12,10 @@
     "@astrojs/mdx": "^4.3.13",
     "astro": "^5.17.1",
     "three": "^0.183.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.7",
+    "@types/three": "^0.183.1",
+    "typescript": "^5.9.3"
   }
 }
