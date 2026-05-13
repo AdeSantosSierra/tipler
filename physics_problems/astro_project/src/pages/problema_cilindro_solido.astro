@@ -1,7 +1,7 @@
 ---
 import PhysicsProblemTemplate from '../components/master/PhysicsProblemTemplate.astro';
 import StepBox from '../components/StepBox.astro';
-import { symbols, cylindricalFlux, cylindricalVolumeCharge, cylindricalVolumeFieldMag, cylindricalVectorField, withTooltip } from '../lib/physics-math';
+import { symbols, cylindricalFlux, cylindricalVolumeCharge, cylindricalVolumeFieldMag, cylindricalVectorField, withTooltip } from '../physics-lib/physics-math';
 
 const apartados = [
   { id: 'apartado-a', label: 'Resolución', active: true }
@@ -158,5 +158,11 @@ export const math = {
                 </div>
             </div>
         </StepBox>
+    </div>
+
+    <div style="margin: 2rem 0; text-align: center;">
+        <a href="/problema_cortezas" style="color: var(--accent-green); text-decoration: none; border: 1px solid var(--accent-green); padding: 0.5rem 1rem; border-radius: 4px; transition: all 0.3s ease; display: inline-block;">
+            &larr; Volver al Problema Anterior: Cortezas Cilíndricas
+        </a>
     </div>
 </PhysicsProblemTemplate>

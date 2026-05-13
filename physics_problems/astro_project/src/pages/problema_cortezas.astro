@@ -1,7 +1,7 @@
 ---
 import PhysicsProblemTemplate from '../components/master/PhysicsProblemTemplate.astro';
 import StepBox from '../components/StepBox.astro';
-import { symbols, cylindricalFlux, cylindricalTotalCharge, cylindricalTotalFieldMag, withTooltip } from '../lib/physics-math';
+import { symbols, cylindricalFlux, cylindricalTotalCharge, cylindricalTotalFieldMag, withTooltip } from '../physics-lib/physics-math';
 
 // Problem Data
 const apartados = [
@@ -247,6 +247,15 @@ export const math = {
                 </div>
             </div>
         </StepBox>
+    </div>
+
+    <div style="margin: 2rem 0; text-align: center; display: flex; justify-content: center; gap: 2rem;">
+        <a href="/problema_orbita" style="color: var(--accent-green); text-decoration: none; border: 1px solid var(--accent-green); padding: 0.5rem 1rem; border-radius: 4px; transition: all 0.3s ease; display: inline-block;">
+            &larr; Anterior: Órbita con Carga
+        </a>
+        <a href="/problema_cilindro_solido" style="color: var(--accent-green); text-decoration: none; border: 1px solid var(--accent-green); padding: 0.5rem 1rem; border-radius: 4px; transition: all 0.3s ease; display: inline-block;">
+            Siguiente: Cilindro Sólido &rarr;
+        </a>
     </div>
 </PhysicsProblemTemplate>
 
