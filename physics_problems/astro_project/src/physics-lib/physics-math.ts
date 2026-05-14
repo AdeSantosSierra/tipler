@@ -9,6 +9,8 @@ export const symbols = {
     E: 'E',
     vecE: String.raw`\vec{E}`,
     ur: String.raw`\vec{u}_r`,
+    phi: String.raw`\Phi`,
+    P: 'P',
     integralGauss: String.raw`\oint_S \vec{E} \cdot d\vec{S}`,
     units: String.raw`\left[\frac{\text{N}}{\text{C}}\right]`
 };

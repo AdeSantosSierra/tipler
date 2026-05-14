@@ -1,30 +1,65 @@
 ---
 import PhysicsProblemTemplate from '../components/master/PhysicsProblemTemplate.astro';
 import StepBox from '../components/StepBox.astro';
-import { symbols, withTooltip } from '../physics-lib/physics-math';
 
 const apartados = [
-  { id: 'apartado-a', label: 'Resolución', active: true }
+  { id: 'apartado-a', label: 'Apartado A', active: true },
+  { id: 'apartado-b', label: 'Apartado B' },
+  { id: 'apartado-c', label: 'Apartado C' }
 ];
 
+// REGLA DE ORO: Todo lo que lleve backslashes \ o llaves {} debe ir en variables String.raw
 const math = {
-    step0_title: String.raw`Problema 5: CIMM (Feynman)`,
-    step0_text: String.raw`Próximamente: Desarrollo del problema CIMM inspirado en las lecciones de Feynman.`,
+    // Apartado A
+    enunciadoA: String.raw`Encuentra el potencial $\Phi$ en el punto $P$, situado a una distancia $r$ desde una línea de carga de longitud $L_1 + L_2$ que contiene una densidad de carga uniforme $\lambda$ $[\mathrm{C}/\mathrm{m}]$.`,
+    enunciadoB: String.raw`Compara tu respuesta de la parte A con el potencial esperado si $r$ fuera mucho mayor que la longitud total de la línea ($r \gg L_1 + L_2$).`,
+    enunciadoC: String.raw`Comprueba tu respuesta del apartado A en el límite $r \ll L_1 + L_2$ mediante la comparación del campo eléctrico derivado del potencial ($\vec{E} = -\nabla \Phi$) con el campo derivado usando la Ley de Gauss para una línea infinita.`,
+    
+    // Fórmulas
+    integralBase: String.raw`$$ \Phi = \int \frac{dq}{4\pi\varepsilon_0 r'} $$`
 };
 ---
 
-<PhysicsProblemTemplate title="Problema 5: CIMM" apartados={apartados}>
-    <div slot="apartado-a">
-        <StepBox label="Enunciado" vizSrc="" vizId="viz-feynman-1">
+<PhysicsProblemTemplate title="Problema 5: CIMM (Feynman)" apartados={apartados}>
+    
+    <!-- Enunciado Global -->
+    <StepBox slot="statement" label="Enunciado del Problema" vizSrc="/feynman_viz.html" vizId="viz-feynman-0">
+        <div class="step-content">
+            <div class="step-text-col" style="flex: 1; border: none; text-align: left; color: white;">
+                <p><strong>(a)</strong> <span set:html={math.enunciadoA} /></p>
+                <p style="margin-top: 1rem;"><strong>(b)</strong> <span set:html={math.enunciadoB} /></p>
+                <p style="margin-top: 1rem;"><strong>(c)</strong> <span set:html={math.enunciadoC} /></p>
+            </div>
+        </div>
+    </StepBox>
+
+    <!-- Contenido de los Apartados -->
+    <div id="apartado-a" class="apartado-section active">
+        <StepBox label="Paso 1: Configuración del Potencial" vizSrc="" vizId="viz-feynman-1">
             <div class="step-content">
-                <div class="step-text-col" style="flex: 1; border: none; text-align: left; color: white;">
-                    <p>{math.step0_text}</p>
+                <div class="step-text-col">
+                    <p>Calculando el potencial en $P$ mediante integración...</p>
+                </div>
+                <div class="step-math-col">
+                    <div style="font-size: 1.1em; color: #66d9ef;" set:html={math.integralBase} />
                 </div>
             </div>
         </StepBox>
     </div>
 
-    <div style="margin: 2rem 0; text-align: center;">
+    <div id="apartado-b" class="apartado-section">
+        <div class="step-content">
+            <p style="color: white; padding: 2rem;">Contenido del análisis de campo lejano...</p>
+        </div>
+    </div>
+
+    <div id="apartado-c" class="apartado-section">
+        <div class="step-content">
+            <p style="color: white; padding: 2rem;">Contenido de la verificación con Ley de Gauss...</p>
+        </div>
+    </div>
+
+    <div style="margin: 2rem 0; text-align: center; display: flex; justify-content: center; gap: 2rem;">
         <a href="/problema_cilindro_solido" style="color: var(--accent-green); text-decoration: none; border: 1px solid var(--accent-green); padding: 0.5rem 1rem; border-radius: 4px; transition: all 0.3s ease; display: inline-block;">
             &larr; Volver al Problema Anterior: Cilindro Sólido
         </a>
