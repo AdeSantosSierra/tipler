@@ -39,13 +39,14 @@ const { width = 200, height = 200 } = Astro.props;
     const length = 4;
     const headLength = 1;
     const headWidth = 0.5;
+    const axisColor = 0xffffff;
 
-    // X Axis (Red)
-    scene.add(new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), origin, length, 0xff0000, headLength, headWidth));
-    // Y Axis (Green)
-    scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), origin, length, 0x00ff00, headLength, headWidth));
-    // Z Axis (Blue)
-    scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), origin, length, 0x0000ff, headLength, headWidth));
+    // X Axis (White)
+    scene.add(new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), origin, length, axisColor, headLength, headWidth));
+    // Y Axis (White)
+    scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), origin, length, axisColor, headLength, headWidth));
+    // Z Axis (White)
+    scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), origin, length, axisColor, headLength, headWidth));
 
     // Animation Loop
     function animate() {

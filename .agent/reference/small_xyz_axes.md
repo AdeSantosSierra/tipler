@@ -18,9 +18,9 @@ const axisLength = 4;
 const headLength = 1;
 const headWidth = 0.5;
 
-scene.add(new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), axesOrigin, axisLength, 0xff0000, headLength, headWidth));  // X - Rojo
-scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), axesOrigin, axisLength, 0x00ff00, headLength, headWidth));  // Y - Verde
-scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), axesOrigin, axisLength, 0x0000ff, headLength, headWidth));  // Z - Azul
+scene.add(new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), axesOrigin, axisLength, 0xffffff, headLength, headWidth));  // X - Blanco
+scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), axesOrigin, axisLength, 0xffffff, headLength, headWidth));  // Y - Blanco
+scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), axesOrigin, axisLength, 0xffffff, headLength, headWidth));  // Z - Blanco
 ```
 
 ### 2. Etiquetas para los Ejes
@@ -28,9 +28,9 @@ scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), axesOrigin, axisLeng
 ```javascript
 // Labels Data (agregar al array de labels existente)
 const labels = [
-  { text: "X", pos: new THREE.Vector3(3.5, 0, -48), color: "#ff4444" },   // Rojo
-  { text: "Y", pos: new THREE.Vector3(0, 3.5, -48), color: "#44ff44" },   // Verde
-  { text: "Z", pos: new THREE.Vector3(0, 0, -44.5), color: "#4444ff" },   // Azul
+  { text: "X", pos: new THREE.Vector3(3.5, 0, -48), color: "#ffffff" },   // Blanco
+  { text: "Y", pos: new THREE.Vector3(0, 3.5, -48), color: "#ffffff" },   // Blanco
+  { text: "Z", pos: new THREE.Vector3(0, 0, -44.5), color: "#ffffff" },   // Blanco
   // ... otras etiquetas
 ];
 ```
@@ -39,12 +39,12 @@ const labels = [
 
 - **Tamaño**: Pequeño (4 unidades de longitud)
 - **Colores**:
-  - X: Rojo (`0xff0000` / `#ff4444`)
-  - Y: Verde (`0x00ff00` / `#44ff44`)
-  - Z: Azul (`0x0000ff` / `#4444ff`)
+  - X: Blanco (`0xffffff` / `#ffffff`)
+  - Y: Blanco (`0xffffff` / `#ffffff`)
+  - Z: Blanco (`0xffffff` / `#ffffff`)
 - **Componentes**:
   - Flechas con cabeza (ArrowHelper)
-  - Etiquetas de texto con sombra
+  - Etiquetas de texto (X, Y, Z) en blanco.
 - **Posición**: Configurable mediante `axesOrigin`
 
 ## Uso
@@ -66,15 +66,15 @@ const axisLength = 4;
 const headLength = 1;
 const headWidth = 0.5;
 
-scene.add(new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), axesOrigin, axisLength, 0xff0000, headLength, headWidth));
-scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), axesOrigin, axisLength, 0x00ff00, headLength, headWidth));
-scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), axesOrigin, axisLength, 0x0000ff, headLength, headWidth));
+scene.add(new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), axesOrigin, axisLength, 0xffffff, headLength, headWidth));
+scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), axesOrigin, axisLength, 0xffffff, headLength, headWidth));
+scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), axesOrigin, axisLength, 0xffffff, headLength, headWidth));
 
 // Labels
 const labels = [
-  { text: "X", pos: new THREE.Vector3(13.5, 5, 0), color: "#ff4444" },      // axesOrigin.x + 3.5
-  { text: "Y", pos: new THREE.Vector3(10, 8.5, 0), color: "#44ff44" },      // axesOrigin.y + 3.5
-  { text: "Z", pos: new THREE.Vector3(10, 5, 3.5), color: "#4444ff" },      // axesOrigin.z + 3.5
+  { text: "X", pos: new THREE.Vector3(13.5, 5, 0), color: "#ffffff" },      // Blanco
+  { text: "Y", pos: new THREE.Vector3(10, 8.5, 0), color: "#ffffff" },      // Blanco
+  { text: "Z", pos: new THREE.Vector3(10, 5, 3.5), color: "#ffffff" },      // Blanco
   // ... otras etiquetas
 ];
 ```
