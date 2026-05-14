@@ -1,0 +1,32 @@
+---
+import PhysicsProblemTemplate from '../components/master/PhysicsProblemTemplate.astro';
+import StepBox from '../components/StepBox.astro';
+import { symbols, withTooltip } from '../physics-lib/physics-math';
+
+const apartados = [
+  { id: 'apartado-a', label: 'Resolución', active: true }
+];
+
+const math = {
+    step0_title: String.raw`Problema 5: CIMM (Feynman)`,
+    step0_text: String.raw`Próximamente: Desarrollo del problema CIMM inspirado en las lecciones de Feynman.`,
+};
+---
+
+<PhysicsProblemTemplate title="Problema 5: CIMM" apartados={apartados}>
+    <div slot="apartado-a">
+        <StepBox label="Enunciado" vizSrc="" vizId="viz-feynman-1">
+            <div class="step-content">
+                <div class="step-text-col" style="flex: 1; border: none; text-align: left; color: white;">
+                    <p>{math.step0_text}</p>
+                </div>
+            </div>
+        </StepBox>
+    </div>
+
+    <div style="margin: 2rem 0; text-align: center;">
+        <a href="/problema_cilindro_solido" style="color: var(--accent-green); text-decoration: none; border: 1px solid var(--accent-green); padding: 0.5rem 1rem; border-radius: 4px; transition: all 0.3s ease; display: inline-block;">
+            &larr; Volver al Problema Anterior: Cilindro Sólido
+        </a>
+    </div>
+</PhysicsProblemTemplate>
