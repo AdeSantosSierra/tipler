@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualización Feynman - Simple</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: transparent; font-family: sans-serif; }
+        canvas { display: block; }
+        .label { position: absolute; color: #ffffff; font-size: 1.1em; pointer-events: none; }
+    </style>
+    <script>
+        window.MathJax = { tex: { inlineMath: [['$', '$']] }, svg: { fontCache: 'global' } };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+    <div id="labels"></div>
+    <script type="module">
+        import { ThreeComponents } from './js/three-components.js';
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(10, 5, 25);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        scene.add(new THREE.AmbientLight(0xffffff, 0.9));
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        dirLight.position.set(10, 10, 10);
+        scene.add(dirLight);
+
+        // --- Configuración ---
+        const offsetX = -6; 
+        const L1 = 10, L2 = 6, r = 12;
+        const totalL = L1 + L2;
+        ThreeComponents.createSmallWhiteAxes(scene, new THREE.Vector3(offsetX - 2, -L1 - 2, 0), 1.5);
+
+        // 1. Barra
+        const barGeo = new THREE.CylinderGeometry(0.12, 0.12, totalL, 16);
+        const barMat = new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0x333333 });
+        const bar = new THREE.Mesh(barGeo, barMat);
+        bar.position.set(offsetX, (L2 - L1) / 2, 0);
+        scene.add(bar);
+
+        // 2. Línea r
+        const rLineGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(offsetX, 0, 0), new THREE.Vector3(offsetX + r, 0, 0)]);
+        const dashedMat = new THREE.LineDashedMaterial({ color: 0xffffff, dashSize: 0.2, gapSize: 0.15, opacity: 0.6, transparent: true });
+        const rLine = new THREE.Line(rLineGeo, dashedMat);
+        rLine.computeLineDistances();
+        scene.add(rLine);
+
+        // 3. Punto P
+        const pointP = new THREE.Mesh(new THREE.SphereGeometry(0.25, 32, 32), new THREE.MeshPhongMaterial({ color: 0xffffff }));
+        pointP.position.set(offsetX + r, 0, 0);
+        scene.add(pointP);
+
+        const labelsContainer = document.getElementById('labels');
+        const labelSpecs = [
+            { text: "$L_2$", pos: new THREE.Vector3(offsetX - 1.2, L2/2, 0) },
+            { text: "$L_1$", pos: new THREE.Vector3(offsetX - 1.2, -L1/2, 0) },
+            { text: "$r$", pos: new THREE.Vector3(offsetX + r/2, 0.8, 0) },
+            { text: "$P$", pos: new THREE.Vector3(offsetX + r + 0.8, 0, 0) }
+        ];
+
+        labelSpecs.forEach(l => {
+            const div = document.createElement('div');
+            div.className = 'label';
+            div.innerHTML = l.text;
+            labelsContainer.appendChild(div);
+            l.element = div;
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            labelSpecs.forEach(l => {
+                const vector = l.pos.clone();
+                vector.project(camera);
+                const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+                const y = (-(vector.y * 0.5) + 0.5) * window.innerHeight;
+                l.element.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+                l.element.style.display = (vector.z > 1) ? 'none' : 'block';
+            });
+            renderer.render(scene, camera);
+        }
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        animate();
+    </script>
+</body>
+</html>

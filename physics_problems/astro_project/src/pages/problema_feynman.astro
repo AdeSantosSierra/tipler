@@ -3,45 +3,103 @@ import PhysicsProblemTemplate from '../components/master/PhysicsProblemTemplate.
 import StepBox from '../components/StepBox.astro';
 
 const apartados = [
-  { id: 'apartado-a', label: 'Apartado A', active: true },
-  { id: 'apartado-b', label: 'Apartado B' },
-  { id: 'apartado-c', label: 'Apartado C' }
+  { id: 'apartado-a', label: 'Apartado (a)', active: true },
+  { id: 'apartado-b', label: 'Apartado (b)' },
+  { id: 'apartado-c', label: 'Apartado (c)' }
 ];
 
-// REGLA DE ORO: Todo lo que lleve backslashes \ o llaves {} debe ir en variables String.raw
+// REGLA DE ORO: Todo lo que lleve LaTeX \ o llaves {} DEBE ir aquí.
 const math = {
-    // Apartado A
+    // Enunciado
     enunciadoA: String.raw`Encuentra el potencial $\Phi$ en el punto $P$, situado a una distancia $r$ desde una línea de carga de longitud $L_1 + L_2$ que contiene una densidad de carga uniforme $\lambda$ $[\mathrm{C}/\mathrm{m}]$.`,
-    enunciadoB: String.raw`Compara tu respuesta de la parte A con el potencial esperado si $r$ fuera mucho mayor que la longitud total de la línea ($r \gg L_1 + L_2$).`,
-    enunciadoC: String.raw`Comprueba tu respuesta del apartado A en el límite $r \ll L_1 + L_2$ mediante la comparación del campo eléctrico derivado del potencial ($\vec{E} = -\nabla \Phi$) con el campo derivado usando la Ley de Gauss para una línea infinita.`,
+    enunciadoB: String.raw`Compara tu respuesta de la parte (a) con el potencial esperado si $r$ fuera mucho mayor que la longitud total de la línea ($r \gg L_1 + L_2$).`,
+    enunciadoC: String.raw`Comprueba tu respuesta del apartado (a) en el límite $r \ll L_1 + L_2$ mediante la comparación del campo eléctrico derivado del potencial ($\vec{E} = -\nabla \Phi$) con el campo derivado usando la Ley de Gauss para una línea infinita.`,
     
-    // Fórmulas
-    integralBase: String.raw`$$ \Phi = \int \frac{dq}{4\pi\varepsilon_0 r'} $$`
+    // Paso 1: Comentarios
+    commentL2: String.raw`Consideramos un elemento diferencial $dq$ en el tramo superior a una altura $l_2$. El campo $\vec{E}_2$ apunta alejándose de la carga. La distancia entre el elemento y el punto $P$ es $d_2$:`,
+    commentL1: String.raw`Análogamente, para un elemento en el tramo inferior a una distancia $l_1$ del origen, el campo $\vec{E}_1$ actúa sobre $P$. La distancia al punto $P$ es $d_1$:`,
+
+    // Ecuaciones
+    dPhi_eq: String.raw`d\Phi = \frac{1}{4\pi\varepsilon_0} \frac{dq}{d'}`,
+    dq_eq: String.raw`dq = \lambda \, dy`,
+    dist2_eq: String.raw`d_2 = \sqrt{r^2 + l_2^2}`,
+    dist1_eq: String.raw`d_1 = \sqrt{r^2 + l_1^2}`,
+    integral_setup: String.raw`\Phi = \frac{\lambda}{4\pi\varepsilon_0} \int_{-L_1}^{L_2} \frac{dy}{\sqrt{r^2 + y^2}}`,
+    integral_result: String.raw`\Phi = \frac{\lambda}{4\pi\varepsilon_0} \left[ \ln(y + \sqrt{r^2 + y^2}) \right]_{-L_1}^{L_2}`,
 };
 ---
 
 <PhysicsProblemTemplate title="Problema 5: CIMM (Feynman)" apartados={apartados}>
     
     <!-- Enunciado Global -->
-    <StepBox slot="statement" label="Enunciado del Problema" vizSrc="/feynman_viz.html" vizId="viz-feynman-0">
-        <div class="step-content">
-            <div class="step-text-col" style="flex: 1; border: none; text-align: left; color: white;">
-                <p><strong>(a)</strong> <span set:html={math.enunciadoA} /></p>
-                <p style="margin-top: 1rem;"><strong>(b)</strong> <span set:html={math.enunciadoB} /></p>
-                <p style="margin-top: 1rem;"><strong>(c)</strong> <span set:html={math.enunciadoC} /></p>
-            </div>
-        </div>
-    </StepBox>
-
-    <!-- Contenido de los Apartados -->
-    <div id="apartado-a" class="apartado-section active">
-        <StepBox label="Paso 1: Configuración del Potencial" vizSrc="" vizId="viz-feynman-1">
+    <div slot="statement">
+        <StepBox label="Enunciado del Problema" vizSrc="/feynman_viz_simple.html" vizId="viz-feynman-enunciado">
             <div class="step-content">
-                <div class="step-text-col">
-                    <p>Calculando el potencial en $P$ mediante integración...</p>
+                <div class="step-text-col" style="flex: 1; border: none; text-align: left; color: white;">
+                    <p><strong>(a)</strong> <span set:html={math.enunciadoA} /></p>
+                    <p style="margin-top: 1rem;"><strong>(b)</strong> <span set:html={math.enunciadoB} /></p>
+                    <p style="margin-top: 1rem;"><strong>(c)</strong> <span set:html={math.enunciadoC} /></p>
                 </div>
-                <div class="step-math-col">
-                    <div style="font-size: 1.1em; color: #66d9ef;" set:html={math.integralBase} />
+            </div>
+        </StepBox>
+    </div>
+
+    <!-- Desarrollo Apartado (a) -->
+    <div id="apartado-a" class="apartado-section active">
+        
+        <!-- Paso 1: L2 -->
+        <StepBox label="Paso 1: Análisis del tramo superior ($L_2$)" vizSrc="/feynman_viz_detail.html" vizId="viz-feynman-l2">
+            <div class="step-content-wrapper">
+                <div class="step-text-math-col">
+                    <div class="paso2-section">
+                        <div class="paso2-comment">
+                            <p set:html={math.commentL2}></p>
+                        </div>
+                        <div class="paso2-math">
+                            <div style="font-size: 1.15em; color: #66d9ef;" set:html={`$$ \begin{aligned} ${math.dPhi_eq} \\ ${math.dist2_eq} \end{aligned} $$`} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </StepBox>
+
+        <!-- Paso 2: L1 -->
+        <StepBox label="Paso 2: Análisis del tramo inferior ($L_1$)" vizSrc="/feynman_viz_l1.html" vizId="viz-feynman-l1">
+            <div class="step-content-wrapper">
+                <div class="step-text-math-col">
+                    <div class="paso2-section">
+                        <div class="paso2-comment">
+                            <p set:html={math.commentL1}></p>
+                        </div>
+                        <div class="paso2-math">
+                            <div style="font-size: 1.15em;" set:html={`$$ \begin{aligned} dq = \lambda \, dl_1 \\ ${math.dist1_eq} \end{aligned} $$`} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </StepBox>
+
+        <!-- Paso 3: Integración -->
+        <StepBox label="Paso 3: Cálculo del Potencial Total">
+            <div class="step-content-wrapper">
+                <div class="step-text-math-col" style="width: 100%;">
+                    <div class="paso2-section">
+                        <div class="paso2-comment">
+                            <p>Sumamos las contribuciones de toda la barra integrando desde $y = -L_1$ hasta $y = L_2$:</p>
+                        </div>
+                        <div class="paso2-math">
+                            <div style="font-size: 1.2em; color: #a6e22e;" set:html={`$$ ${math.integral_setup} $$`} />
+                        </div>
+                    </div>
+                    
+                    <div class="paso2-section" style="border-bottom: none;">
+                        <div class="paso2-comment">
+                            <p>Aplicando la primitiva logarítmica y evaluando en los límites:</p>
+                        </div>
+                        <div class="paso2-math">
+                            <div style="font-size: 1.2em;" set:html={`$$ ${math.integral_result} $$`} />
+                        </div>
+                    </div>
                 </div>
             </div>
         </StepBox>
@@ -49,19 +107,19 @@ const math = {
 
     <div id="apartado-b" class="apartado-section">
         <div class="step-content">
-            <p style="color: white; padding: 2rem;">Contenido del análisis de campo lejano...</p>
+            <p style="color: white; padding: 2rem;">Contenido del análisis de campo lejano ($r \gg L_1 + L_2$)</p>
         </div>
     </div>
 
     <div id="apartado-c" class="apartado-section">
         <div class="step-content">
-            <p style="color: white; padding: 2rem;">Contenido de la verificación con Ley de Gauss...</p>
+            <p style="color: white; padding: 2rem;">Verificación con Ley de Gauss ($r \ll L_1 + L_2$)</p>
         </div>
     </div>
 
     <div style="margin: 2rem 0; text-align: center; display: flex; justify-content: center; gap: 2rem;">
         <a href="/problema_cilindro_solido" style="color: var(--accent-green); text-decoration: none; border: 1px solid var(--accent-green); padding: 0.5rem 1rem; border-radius: 4px; transition: all 0.3s ease; display: inline-block;">
-            &larr; Volver al Problema Anterior: Cilindro Sólido
+            &larr; Volver al Problema Anterior
         </a>
     </div>
 </PhysicsProblemTemplate>
