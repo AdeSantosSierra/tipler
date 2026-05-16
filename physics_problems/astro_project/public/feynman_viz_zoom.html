@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Visualización Feynman - Zoom Punto P</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: transparent; font-family: sans-serif; }
+        canvas { display: block; }
+        .label { position: absolute; font-size: 1.1em; pointer-events: none; }
+    </style>
+    <script>window.MathJax = { tex: { inlineMath: [['$', '$']] }, svg: { fontCache: 'global' } };</script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+    <div id="labels"></div>
+    <script type="module">
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(12, 0, 15);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+
+        scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+        
+        const ORANGE = 0xfd971f; // Tramo 1
+        const PURPLE = 0xae81ff; // Tramo 2
+        const WHITE = 0xffffff;
+        const originP = new THREE.Vector3(0, 0, 0);
+
+        const axisLen = 6;
+        const dashedMat = new THREE.LineDashedMaterial({ color: WHITE, dashSize: 0.1, gapSize: 0.1, opacity: 0.4, transparent: true });
+        
+        // Eje X local
+        const xAxis = new THREE.Line(new THREE.BufferGeometry().setFromPoints([originP, new THREE.Vector3(axisLen, 0, 0)]), dashedMat);
+        xAxis.computeLineDistances(); scene.add(xAxis);
+
+        // Eje Y local
+        const yAxis = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, -axisLen/2, 0), new THREE.Vector3(0, axisLen/2, 0)]), dashedMat);
+        yAxis.computeLineDistances(); scene.add(yAxis);
+
+        const alpha1 = 0.5, alpha2 = 0.4, vecLen = 5;
+
+        function addField(angle, color, isUp, labelPrefix) {
+            const dir = new THREE.Vector3(Math.cos(angle), isUp ? -Math.sin(angle) : Math.sin(angle), 0);
+            scene.add(new THREE.ArrowHelper(dir, originP, vecLen, color, 0.8, 0.3));
+            
+            // Componentes
+            scene.add(new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), originP, vecLen * Math.cos(angle), color, 0.4, 0.2));
+            scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, isUp ? -1 : 1, 0), originP, vecLen * Math.sin(angle), color, 0.4, 0.2));
+
+            // Proyecciones
+            const projLine = new THREE.Line(
+                new THREE.BufferGeometry().setFromPoints([
+                    new THREE.Vector3(vecLen * Math.cos(angle), 0, 0),
+                    new THREE.Vector3(vecLen * Math.cos(angle), isUp ? -vecLen * Math.sin(angle) : vecLen * Math.sin(angle), 0),
+                    new THREE.Vector3(0, isUp ? -vecLen * Math.sin(angle) : vecLen * Math.sin(angle), 0)
+                ]),
+                new THREE.LineDashedMaterial({ color: color, dashSize: 0.05, gapSize: 0.05, opacity: 0.3, transparent: true })
+            );
+            projLine.computeLineDistances(); scene.add(projLine);
+
+            // Arcos
+            scene.add(new THREE.Line(
+                new THREE.BufferGeometry().setFromPoints(new THREE.EllipseCurve(0, 0, 1.5, 1.5, 0, isUp ? -angle : angle, isUp, 0).getPoints(50)),
+                new THREE.LineBasicMaterial({ color: color, opacity: 0.6, transparent: true })
+            ));
+            return dir;
+        }
+
+        const dirE2 = addField(alpha2, PURPLE, true, "2");
+        const dirE1 = addField(alpha1, ORANGE, false, "1");
+
+        scene.add(new THREE.Mesh(new THREE.SphereGeometry(0.15, 32, 32), new THREE.MeshPhongMaterial({ color: WHITE })));
+
+        const labels = [
+            { text: "$P$", pos: new THREE.Vector3(-0.4, -0.4, 0), color: "#ffffff" },
+            { text: "$\\vec{E}_2$", pos: dirE2.clone().multiplyScalar(vecLen + 0.5), color: "#ae81ff" },
+            { text: "$\\vec{E}_1$", pos: dirE1.clone().multiplyScalar(vecLen + 0.5), color: "#fd971f" },
+            { text: "$\\vec{E}_{2x}$", pos: new THREE.Vector3(vecLen * Math.cos(alpha2) * 0.7, 0.4, 0), color: "#ae81ff" },
+            { text: "$\\vec{E}_{1x}$", pos: new THREE.Vector3(vecLen * Math.cos(alpha1) * 0.7, -0.4, 0), color: "#fd971f" },
+            { text: "$\\vec{E}_{2y}$", pos: new THREE.Vector3(-0.8, -vecLen * Math.sin(alpha2) * 0.7, 0), color: "#ae81ff" },
+            { text: "$\\vec{E}_{1y}$", pos: new THREE.Vector3(-0.8, vecLen * Math.sin(alpha1) * 0.7, 0), color: "#fd971f" },
+            { text: "$\\alpha_2$", pos: new THREE.Vector3(1.8, -0.4, 0), color: "#ae81ff" },
+            { text: "$\\alpha_1$", pos: new THREE.Vector3(1.8, 0.4, 0), color: "#fd971f" }
+        ];
+
+        const container = document.getElementById('labels');
+        labels.forEach(l => {
+            const div = document.createElement('div');
+            div.className = 'label'; div.innerHTML = l.text; div.style.color = l.color;
+            container.appendChild(div); l.el = div;
+        });
+
+        function animate() {
+            requestAnimationFrame(animate); controls.update();
+            labels.forEach(l => {
+                const v = l.pos.clone().project(camera);
+                l.el.style.transform = `translate(-50%, -50%) translate(${(v.x*0.5+0.5)*window.innerWidth}px, ${(-(v.y*0.5)+0.5)*window.innerHeight}px)`;
+            });
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>
