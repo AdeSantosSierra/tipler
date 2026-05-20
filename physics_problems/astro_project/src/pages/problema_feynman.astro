@@ -8,22 +8,38 @@ const apartados = [
   { id: 'apartado-c', label: 'Apartado (c)' }
 ];
 
-// REGLA DE ORO: Todo lo que lleve LaTeX \ o llaves {} DEBE ir aquí.
 const math = {
     // Enunciado
     enunciadoA: String.raw`Encuentra el potencial $\Phi$ en el punto $P$, situado a una distancia $r$ desde una línea de carga de longitud $L_1 + L_2$ que contiene una densidad de carga uniforme $\lambda$ $[\mathrm{C}/\mathrm{m}]$.`,
     enunciadoB: String.raw`Compara tu respuesta de la parte (a) con el potencial esperado si $r$ fuera mucho mayor que la longitud total de la línea ($r \gg L_1 + L_2$).`,
     enunciadoC: String.raw`Comprueba tu respuesta del apartado (a) en el límite $r \ll L_1 + L_2$ mediante la comparación del campo eléctrico derivado del potencial ($\vec{E} = -\nabla \Phi$) con el campo derivado usando la Ley de Gauss para una línea infinita.`,
     
-    // Paso 1: Comentarios
-    commentL2: String.raw`Consideramos un elemento diferencial $dq$ en el tramo superior a una altura $l_2$. El campo $\vec{E}_2$ apunta alejándose de la carga. La distancia entre el elemento y el punto $P$ es $d_2$:`,
-    commentL1: String.raw`Análogamente, para un elemento en el tramo inferior a una distancia $l_1$ del origen, el campo $\vec{E}_1$ actúa sobre $P$. La distancia al punto $P$ es $d_1$:`,
+    // Paso 1: Relación Potencial-Campo (Texto Secuencial)
+    p1_text1: String.raw`La diferencia de potencial entre dos puntos $(a)$ y $(b)$ se define como:`,
+    p1_eq1: String.raw`\Phi(b) - \Phi(a) = -\int_a^b \vec{E} \cdot d\vec{l}`,
+    p1_text2: String.raw`Independientemente de la trayectoria seguida entre $a$ y $b$, pues el campo eléctrico es conservativo, donde $\vec{E}$ se denomina campo eléctrico. Dicho potencial puede verse también como el trabajo por unidad de carga. Aplicado a nuestro problema, dada la geometría, $\Phi(P)$ puede calcularse como la integral entre infinito y $P$ de $\vec{E} \cdot d\vec{r}$, asumiendo que $\Phi(\infty) = 0$:`,
+    p1_eq2: String.raw`\Phi(P) = -\int_{\infty}^P \vec{E} \cdot d\vec{r}`,
+    p1_text3: String.raw`Como el campo $\vec{E}$ en electrostática es conservativo, el cálculo del potencial no depende del camino escogido, luego puedo elegir la trayectoria que me resulte más cómoda (en este caso a lo largo del eje $X$ únicamente). Eso significa que $d\vec{r} = (dx, 0, 0)$ y por lo tanto solo necesito calcular el campo eléctrico en la dirección horizontal:`,
+    p1_eq3: String.raw`\begin{aligned} d\vec{r} &= dx \, \vec{\imath} \\ \Phi(P) &= -\int_{\infty}^r E_x \, dx \end{aligned}`,
 
-    // Ecuaciones
-    dPhi_eq: String.raw`d\Phi = \frac{1}{4\pi\varepsilon_0} \frac{dq}{d'}`,
-    dq_eq: String.raw`dq = \lambda \, dy`,
-    dist2_eq: String.raw`d_2 = \sqrt{r^2 + l_2^2}`,
-    dist1_eq: String.raw`d_1 = \sqrt{r^2 + l_1^2}`,
+    // Paso 2: L2 (Morado)
+    commentL2_field: String.raw`Calculamos el campo eléctrico elemental generado por el diferencial de carga $dq_2$ del tramo superior`,
+    commentL2_dq: String.raw`Expresamos el diferencial de carga en función de la densidad lineal $\lambda$`,
+    commentL2_dist: String.raw`La distancia $d_2$ se puede expresar geométricamente de dos formas equivalentes`,
+    eqsL2: String.raw`\begin{aligned} dE_2 &= \frac{1}{4\pi\varepsilon_0} \frac{dq_2}{d_2^2} \\ dq_2 &= \lambda \, dl_2 \\ d_2 &= \frac{r}{\cos \alpha_2} \\ d_2^2 &= l_2^2 + r^2 \end{aligned}`,
+
+    // Paso 3: L1 (Naranja)
+    commentL1_field: String.raw`Análogamente, para el tramo inferior, el campo elemental $dE_1$ es`,
+    commentL1_dq: String.raw`Donde el diferencial de carga es`,
+    commentL1_dist: String.raw`Y la distancia $d_1$ se expresa como`,
+    eqsL1: String.raw`\begin{aligned} dE_1 &= \frac{1}{4\pi\varepsilon_0} \frac{dq_1}{d_1^2} \\ dq_1 &= \lambda \, dl_1 \\ d_1 &= \frac{r}{\cos \alpha_1} \\ d_1^2 &= l_1^2 + r^2 \end{aligned}`,
+
+    // Paso 4: Zoom y Descomposición
+    commentZoom: String.raw`Los campos $\vec{E}_i$ se pueden descomponer en los ejes coordenados de la siguiente manera, donde $\alpha_1$ y $\alpha_2$ tienen las siguientes relaciones trigonométricas`,
+    matrixTrig: String.raw`\begin{matrix} \cos \alpha_1 = \frac{r}{d_1} & \cos \alpha_2 = \frac{r}{d_2} \\ \sin \alpha_1 = \frac{l_1}{d_1} & \sin \alpha_2 = \frac{l_2}{d_2} \end{matrix}`,
+    decomp_eqs: String.raw`\begin{aligned} \vec{E}_x &= \vec{E}_{1x} + \vec{E}_{2x} = (E_1 \cos \alpha_1 + E_2 \cos \alpha_2) \, \vec{\imath} \\ \vec{E}_y &= \vec{E}_{2y} - \vec{E}_{1y} = (E_2 \sin \alpha_2 - E_1 \sin \alpha_1) \, \vec{\jmath} \end{aligned}`,
+
+    // Paso 5: Integración
     integral_setup: String.raw`\Phi = \frac{\lambda}{4\pi\varepsilon_0} \int_{-L_1}^{L_2} \frac{dy}{\sqrt{r^2 + y^2}}`,
     integral_result: String.raw`\Phi = \frac{\lambda}{4\pi\varepsilon_0} \left[ \ln(y + \sqrt{r^2 + y^2}) \right]_{-L_1}^{L_2}`,
 };
@@ -47,40 +63,84 @@ const math = {
     <!-- Desarrollo Apartado (a) -->
     <div id="apartado-a" class="apartado-section active">
         
-        <!-- Paso 1: L2 -->
-        <StepBox label="Paso 1: Análisis del tramo superior ($L_2$)" vizSrc="/feynman_viz_detail.html" vizId="viz-feynman-l2">
+        <!-- Paso 1: Relación Potencial-Campo (UNA COLUMNA) -->
+        <StepBox label="Paso 1: Relación entre Potencial y Campo">
+            <div style="color: #f8f8f2; line-height: 1.8; text-align: left;">
+                <p set:html={math.p1_text1} />
+                <div style="margin: 1.5rem 0; text-align: center; font-size: 1.2em;">
+                    <span set:html={`$$ ${math.p1_eq1} $$`} />
+                </div>
+                
+                <p set:html={math.p1_text2} />
+                <div style="margin: 1.5rem 0; text-align: center; font-size: 1.2em;">
+                    <span set:html={`$$ ${math.p1_eq2} $$`} />
+                </div>
+
+                <p set:html={math.p1_text3} />
+                <div style="margin: 1.5rem 0; text-align: center; font-size: 1.2em;">
+                    <span set:html={`$$ ${math.p1_eq3} $$`} />
+                </div>
+            </div>
+        </StepBox>
+
+        <!-- Paso 2: L2 -->
+        <StepBox label="Paso 2: Análisis del tramo superior ($L_2$)" vizSrc="/feynman_viz_detail.html" vizId="viz-feynman-l2">
             <div class="step-content-wrapper">
-                <div class="step-text-math-col">
+                <div class="step-text-math-col" style="width: 100%;">
                     <div class="paso2-section">
                         <div class="paso2-comment">
-                            <p set:html={math.commentL2}></p>
+                            <p set:html={math.commentL2_field}></p>
                         </div>
                         <div class="paso2-math">
-                            <div style="font-size: 1.15em; color: #66d9ef;" set:html={`$$ \begin{aligned} ${math.dPhi_eq} \\ ${math.dist2_eq} \end{aligned} $$`} />
+                            <div style="font-size: 1.15em; color: white;" set:html={`$$ ${math.eqsL2} $$`} />
                         </div>
                     </div>
                 </div>
             </div>
         </StepBox>
 
-        <!-- Paso 2: L1 -->
-        <StepBox label="Paso 2: Análisis del tramo inferior ($L_1$)" vizSrc="/feynman_viz_l1.html" vizId="viz-feynman-l1">
+        <!-- Paso 3: L1 -->
+        <StepBox label="Paso 3: Análisis del tramo inferior ($L_1$)" vizSrc="/feynman_viz_l1.html" vizId="viz-feynman-l1">
             <div class="step-content-wrapper">
-                <div class="step-text-math-col">
+                <div class="step-text-math-col" style="width: 100%;">
                     <div class="paso2-section">
                         <div class="paso2-comment">
-                            <p set:html={math.commentL1}></p>
+                            <p set:html={math.commentL1_field}></p>
                         </div>
                         <div class="paso2-math">
-                            <div style="font-size: 1.15em;" set:html={`$$ \begin{aligned} dq = \lambda \, dl_1 \\ ${math.dist1_eq} \end{aligned} $$`} />
+                            <div style="font-size: 1.15em; color: white;" set:html={`$$ ${math.eqsL1} $$`} />
                         </div>
                     </div>
                 </div>
             </div>
         </StepBox>
 
-        <!-- Paso 3: Integración -->
-        <StepBox label="Paso 3: Cálculo del Potencial Total">
+        <!-- Paso 4: Descomposición -->
+        <StepBox label="Paso 4: Descomposición de Campos" vizSrc="/feynman_viz_zoom.html" vizId="viz-feynman-zoom">
+            <div class="step-content-wrapper">
+                <div class="step-text-math-col" style="width: 100%;">
+                    <div class="paso2-section">
+                        <div class="paso2-comment">
+                            <p set:html={math.commentZoom}></p>
+                        </div>
+                        <div class="paso2-math">
+                            <div style="font-size: 1.25em; color: white;" set:html={`$$ ${math.matrixTrig} $$`} />
+                        </div>
+                    </div>
+                    <div class="paso2-section" style="border-bottom: none;">
+                        <div class="paso2-comment">
+                            <p>Descomposición cartesiana de los vectores de campo sobre el punto $P$</p>
+                        </div>
+                        <div class="paso2-math">
+                            <div style="font-size: 1.2em; color: white;" set:html={`$$ ${math.decomp_eqs} $$`} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </StepBox>
+
+        <!-- Paso 5: Integración -->
+        <StepBox label="Paso 5: Cálculo del Potencial Total">
             <div class="step-content-wrapper">
                 <div class="step-text-math-col" style="width: 100%;">
                     <div class="paso2-section">
