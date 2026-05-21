@@ -56,8 +56,12 @@ const math = {
     &= \frac{\lambda}{4\pi\varepsilon_0 r} \left( \frac{L_2}{\sqrt{L_2^2 + r^2}} - \left( \frac{-L_1}{\sqrt{(-L_1)^2 + r^2}} \right) \right) \quad \left[\frac{\unit{N}}{\unit{C}}\right]
     \end{aligned}`,
 
-    // Paso 6: Integración
+    // Paso 6: Cálculo del Potencial Total
+    p6_text1: String.raw`Hasta aquí solo hemos calculado el campo eléctrico. Ahora calculamos el potencial como una integral de línea:`,
+    p6_eq1: String.raw`\Phi(B) - \Phi(A) = \Phi(P) = -\int_{\infty}^{r} \vec{E} \cdot d\vec{r} = -\int_{\infty}^{r} E_x \, dx`,
+    p6_text2: String.raw`Calculamos o resolvemos la integral por un lado, entonces tenemos que:`,
     integral_setup: String.raw`\Phi = \frac{\lambda}{4\pi\varepsilon_0} \int_{-L_1}^{L_2} \frac{dy}{\sqrt{r^2 + y^2}}`,
+    p6_text3: String.raw`Aplicando la primitiva logarítmica y evaluando en los límites:`,
     integral_result: String.raw`\Phi = \frac{\lambda}{4\pi\varepsilon_0} \left[ \ln(y + \sqrt{r^2 + y^2}) \right]_{-L_1}^{L_2}`,
 };
 ---
@@ -198,25 +202,34 @@ const math = {
             </div>
         </StepBox>
 
-        <!-- Paso 6: Integración -->
+        <!-- Paso 6: Integración / Cálculo del Potencial Total -->
         <StepBox label="Paso 6: Cálculo del Potencial Total">
             <div class="step-content-wrapper">
                 <div class="step-text-math-col" style="width: 100%;">
                     <div class="paso2-section">
                         <div class="paso2-comment">
-                            <p>Sumamos las contribuciones de toda la barra integrando desde $y = -L_1$ hasta $y = L_2$:</p>
+                            <p set:html={math.p6_text1}></p>
                         </div>
                         <div class="paso2-math">
-                            <div style="font-size: 1.2em; color: #a6e22e;" set:html={`$$ ${math.integral_setup} $$`} />
+                            <div style="font-size: 1.15em; color: white;" set:html={`$$ ${math.p6_eq1} $$`} />
+                        </div>
+                    </div>
+                    
+                    <div class="paso2-section">
+                        <div class="paso2-comment">
+                            <p set:html={math.p6_text2}></p>
+                        </div>
+                        <div class="paso2-math">
+                            <div style="font-size: 1.15em; color: #a6e22e;" set:html={`$$ ${math.integral_setup} $$`} />
                         </div>
                     </div>
                     
                     <div class="paso2-section" style="border-bottom: none;">
                         <div class="paso2-comment">
-                            <p>Aplicando la primitiva logarítmica y evaluando en los límites:</p>
+                            <p set:html={math.p6_text3}></p>
                         </div>
                         <div class="paso2-math">
-                            <div style="font-size: 1.2em;" set:html={`$$ ${math.integral_result} $$`} />
+                            <div style="font-size: 1.15em;" set:html={`$$ ${math.integral_result} $$`} />
                         </div>
                     </div>
                 </div>
