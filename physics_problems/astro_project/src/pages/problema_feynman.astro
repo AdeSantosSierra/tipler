@@ -86,23 +86,17 @@ const math = {
         
         <!-- Paso 1: Relación Potencial-Campo (UNA COLUMNA) -->
         <StepBox label="Paso 1: Relación entre Potencial y Campo">
-            <div style="color: #f8f8f2; line-height: 1.8; text-align: left;">
+            <div class="step-onecolumn">
                 <p set:html={math.p1_text1} />
-                <div style="margin: 1.5rem 0; text-align: center; font-size: 1.2em;">
-                    <span set:html={`$$ ${math.p1_eq1} $$`} />
-                </div>
+                <div class="step-math-centered" set:html={`$$ ${math.p1_eq1} $$`} />
                 
                 <p set:html={math.p1_text2} />
-                <div style="margin: 1.5rem 0; text-align: center; font-size: 1.2em;">
-                    <span set:html={`$$ ${math.p1_eq2} $$`} />
-                </div>
+                <div class="step-math-centered" set:html={`$$ ${math.p1_eq2} $$`} />
 
                 <p set:html={math.p1_text2b} />
 
                 <p set:html={math.p1_text3} />
-                <div style="margin: 1.5rem 0; text-align: center; font-size: 1.2em;">
-                    <span set:html={`$$ ${math.p1_eq3} $$`} />
-                </div>
+                <div class="step-math-centered" set:html={`$$ ${math.p1_eq3} $$`} />
             </div>
         </StepBox>
 
@@ -110,11 +104,11 @@ const math = {
         <StepBox label="Paso 2: Análisis del tramo superior ($L_2$)" vizSrc="/feynman_viz_detail.html" vizId="viz-feynman-l2">
             <div class="step-content-wrapper">
                 <div class="step-text-math-col" style="width: 100%;">
-                    <div class="paso2-section">
-                        <div class="paso2-comment">
+                    <div class="step-twocolumns">
+                        <div class="step-comment">
                             <p set:html={math.commentL2_field}></p>
                         </div>
-                        <div class="paso2-math">
+                        <div class="step-math">
                             <div style="font-size: 1.15em; color: white;" set:html={`$$ ${math.eqsL2} $$`} />
                         </div>
                     </div>
@@ -126,11 +120,11 @@ const math = {
         <StepBox label="Paso 3: Análisis del tramo inferior ($L_1$)" vizSrc="/feynman_viz_l1.html" vizId="viz-feynman-l1">
             <div class="step-content-wrapper">
                 <div class="step-text-math-col" style="width: 100%;">
-                    <div class="paso2-section">
-                        <div class="paso2-comment">
+                    <div class="step-twocolumns">
+                        <div class="step-comment">
                             <p set:html={math.commentL1_field}></p>
                         </div>
-                        <div class="paso2-math">
+                        <div class="step-math">
                             <div style="font-size: 1.15em; color: white;" set:html={`$$ ${math.eqsL1} $$`} />
                         </div>
                     </div>
@@ -142,19 +136,19 @@ const math = {
         <StepBox label="Paso 4: Descomposición de Campos" vizSrc="/feynman_viz_zoom.html" vizId="viz-feynman-zoom">
             <div class="step-content-wrapper">
                 <div class="step-text-math-col" style="width: 100%;">
-                    <div class="paso2-section">
-                        <div class="paso2-comment">
+                    <div class="step-twocolumns">
+                        <div class="step-comment">
                             <p set:html={math.commentZoom}></p>
                         </div>
-                        <div class="paso2-math">
+                        <div class="step-math">
                             <div style="font-size: 1.25em; color: white;" set:html={`$$ ${math.matrixTrig} $$`} />
                         </div>
                     </div>
-                    <div class="paso2-section" style="border-bottom: none;">
-                        <div class="paso2-comment">
+                    <div class="step-twocolumns" style="border-bottom: none;">
+                        <div class="step-comment">
                             <p>Descomposición cartesiana de los vectores de campo sobre el punto $P$</p>
                         </div>
-                        <div class="paso2-math">
+                        <div class="step-math">
                             <div style="font-size: 1.2em; color: white;" set:html={`$$ ${math.decomp_eqs} $$`} />
                         </div>
                     </div>
@@ -166,36 +160,36 @@ const math = {
         <StepBox label="Paso 5: Cálculo de la componente horizontal del campo eléctrico" vizSrc="/feynman_viz_l1.html" vizId="viz-feynman-l1-field">
             <div class="step-content-wrapper">
                 <div class="step-text-math-col" style="width: 100%;">
-                    <div class="paso2-section">
-                        <div class="paso2-comment">
+                    <div class="step-twocolumns">
+                        <div class="step-comment">
                             <p set:html={math.p5_text1}></p>
                         </div>
-                        <div class="paso2-math">
+                        <div class="step-math">
                             <div style="font-size: 1.15em; color: white;" set:html={`$$ ${math.p5_eq1} $$`} />
                         </div>
                     </div>
-                    <div class="paso2-section">
-                        <div class="paso2-comment">
+                    <div class="step-twocolumns">
+                        <div class="step-comment">
                             <p set:html={math.p5_text2}></p>
                         </div>
-                        <div class="paso2-math">
+                        <div class="step-math">
                             <div style="font-size: 1.15em; color: white;" set:html={`$$ ${math.p5_eq2} $$`} />
                         </div>
                     </div>
-                    <div class="paso2-section">
-                        <div class="paso2-comment">
+                    <div class="step-twocolumns">
+                        <div class="step-comment">
                             <p set:html={math.p5_text3}></p>
                         </div>
-                        <div class="paso2-math">
+                        <div class="step-math">
                             <div style="font-size: 1.15em; color: white;" set:html={`$$ ${math.p5_eq3} $$`} />
                         </div>
                     </div>
-                    <div class="paso2-section" style="border-bottom: none;">
-                        <div class="paso2-comment">
+                    <div class="step-twocolumns" style="border-bottom: none;">
+                        <div class="step-comment">
                             <p set:html={math.p5_text4}></p>
                         </div>
-                        <div class="paso2-math">
-                            <div style="font-size: 1.15em; color: #a6e22e;" set:html={`$$ ${math.p5_eq4} $$`} />
+                        <div class="step-math">
+                            <div style="font-size: 1.15em;" set:html={`$$ ${math.p5_eq4} $$`} />
                         </div>
                     </div>
                 </div>
@@ -206,29 +200,24 @@ const math = {
         <StepBox label="Paso 6: Cálculo del Potencial Total">
             <div class="step-content-wrapper">
                 <div class="step-text-math-col" style="width: 100%;">
-                    <div class="paso2-section">
-                        <div class="paso2-comment">
-                            <p set:html={math.p6_text1}></p>
-                        </div>
-                        <div class="paso2-math">
-                            <div style="font-size: 1.15em; color: white;" set:html={`$$ ${math.p6_eq1} $$`} />
-                        </div>
+                    <div class="step-onecolumn">
+                        <p set:html={math.p6_text1}></p>
+                        <div class="step-math-centered" set:html={`$$ ${math.p6_eq1} $$`} />
                     </div>
-                    
-                    <div class="paso2-section">
-                        <div class="paso2-comment">
+                    <div class="step-twocolumns">
+                        <div class="step-comment">
                             <p set:html={math.p6_text2}></p>
                         </div>
-                        <div class="paso2-math">
+                        <div class="step-math">
                             <div style="font-size: 1.15em; color: #a6e22e;" set:html={`$$ ${math.integral_setup} $$`} />
                         </div>
                     </div>
                     
-                    <div class="paso2-section" style="border-bottom: none;">
-                        <div class="paso2-comment">
+                    <div class="step-twocolumns" style="border-bottom: none;">
+                        <div class="step-comment">
                             <p set:html={math.p6_text3}></p>
                         </div>
-                        <div class="paso2-math">
+                        <div class="step-math">
                             <div style="font-size: 1.15em;" set:html={`$$ ${math.integral_result} $$`} />
                         </div>
                     </div>

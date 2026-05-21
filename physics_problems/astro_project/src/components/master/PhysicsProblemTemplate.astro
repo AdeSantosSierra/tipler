@@ -227,7 +227,7 @@ const { title, apartados = [] } = Astro.props;
         bottom: calc(100% + 8px);
     }
 
-    .paso2-section {
+    .step-twocolumns {
         display: grid;
         grid-template-columns: 1fr 2fr;
         gap: 0;
@@ -235,7 +235,7 @@ const { title, apartados = [] } = Astro.props;
         align-items: stretch;
     }
 
-    .paso2-comment {
+    .step-comment {
         color: #cfcfc2;
         font-size: 0.95em;
         line-height: 1.6;
@@ -247,10 +247,31 @@ const { title, apartados = [] } = Astro.props;
         justify-content: flex-end;
     }
 
-    .paso2-math {
+    .step-math {
         padding: 1.2rem 2rem;
         display: flex;
         flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .step-onecolumn {
+        color: #cfcfc2;
+        font-size: 0.95em;
+        line-height: 1.8;
+        padding: 1.2rem 0;
+        text-align: left;
+    }
+
+    .step-onecolumn p {
+        margin-bottom: 1rem;
+    }
+
+    .step-onecolumn .step-math-centered {
+        margin: 1.5rem 0;
+        text-align: center;
+        font-size: 1.15em;
+        display: flex;
         justify-content: center;
         align-items: center;
     }

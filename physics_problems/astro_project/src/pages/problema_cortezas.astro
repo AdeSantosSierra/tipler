@@ -123,20 +123,20 @@ export const math = {
                     <iframe src="/generic_cylindrical_viewer.html?r=1.7" class="viz-frame" id="viz-step-2" scrolling="no" style="width: 100%; height: 400px; border: none; border-radius: 8px;"></iframe>
                 </div>
                 <div class="step-text-math-col" style="padding: 0;">
-                    <div class="paso2-section">
-                        <div class="paso2-comment">
+                    <div class="step-twocolumns">
+                        <div class="step-comment">
                             <p>Por simetría cilíndrica, {`$ ` + math.E + ` $`} es constante y perpendicular en toda la superficie gaussiana, por lo que podemos extraerla de la integral.</p>
                         </div>
-                        <div class="paso2-math">
+                        <div class="step-math">
                             <div style="font-size: 1.05em; overflow-x: auto;" set:html={String.raw`$$ \begin{align*} ${math.step2_flujo} \end{align*} $$`} />
                         </div>
                     </div>
 
-                    <div class="paso2-section">
-                        <div class="paso2-comment">
+                    <div class="step-twocolumns">
+                        <div class="step-comment">
                             <p>La carga encerrada es únicamente la de la corteza interior de radio {`$ ` + math.R1 + ` $`}.</p>
                         </div>
-                        <div class="paso2-math" style="display: flex; justify-content: center;">
+                        <div class="step-math" style="display: flex; justify-content: center;">
                             <div class="qenc-tooltip-container-inline">
                                 <div class="qenc-red-box-simple">
                                     <div style="font-size: 1.05em; overflow-x: auto;" set:html={`$$ ${math.step2_carga} $$`} />
@@ -148,11 +148,11 @@ export const math = {
                         </div>
                     </div>
 
-                    <div class="paso2-section" style="border-bottom: none;">
-                        <div class="paso2-comment">
+                    <div class="step-twocolumns" style="border-bottom: none;">
+                        <div class="step-comment">
                             <p set:html={`Igualamos los términos anteriores. El campo resultante decae con $ \\frac{1}{r} $ y apunta en dirección radial.`} />
                         </div>
-                        <div class="paso2-math">
+                        <div class="step-math">
                             <div style="font-size: 1.05em; overflow-x: auto;" set:html={String.raw`$$ \begin{align*} ${math.step2_resultado} \end{align*} $$`} />
                         </div>
                     </div>
@@ -189,11 +189,11 @@ export const math = {
         <StepBox label="Conclusiones: Expresión del Campo Eléctrico">
             <div class="step-content-wrapper">
                 <div class="step-text-math-col" style="padding: 0;">
-                    <div class="paso2-section" style="border-bottom: none;">
-                        <div class="paso2-comment" style="color: #f8f8f2;">
+                    <div class="step-twocolumns" style="border-bottom: none;">
+                        <div class="step-comment" style="color: #f8f8f2;">
                             <p>Resumen del campo eléctrico en todas las regiones del espacio:</p>
                         </div>
-                        <div class="paso2-math">
+                        <div class="step-math">
                             <div style="font-size: 1.4em; color: white;" set:html={String.raw`$$ ${math.conclusions} $$`} />
                         </div>
                     </div>
