@@ -36,8 +36,7 @@ const math = {
         \end{align*}`,
     step1_final_eq: String.raw`
         \begin{align*}
-        \vec{E} &= \frac{\lambda}{2\pi \varepsilon_0} \class{hover-trigger radial-tooltip}{\bbox[4px,border:1px dashed
-        #f92672;border-radius:8px,#3d292e]{\frac{\vec{u}_r}{r}}} \quad
+        \vec{E} &= \frac{\lambda}{2\pi \varepsilon_0} \mathTooltip{radial}{\frac{\vec{u}_r}{r}} \quad
         \left[\frac{\unit{N}}{\unit{C}}\right]
         \end{align*}`,
     
@@ -50,17 +49,17 @@ const math = {
     
     step2_row1_Eq: String.raw`
         \begin{align*}
-        \vec{F}_e &= \class{hover-trigger minus-tooltip}{\bbox[4px,border:1px dashed #f92672;border-radius:4px,#3d292e]{\boldsymbol{-}}} q\vec{E} \vec{u}_r \quad [\mathrm{N}]
+        \vec{F}_e &= \mathTooltip{minus}{\boldsymbol{-}} q\vec{E} \vec{u}_r \quad [\mathrm{N}]
         \end{align*}`,
     step2_row2_Eq: String.raw`
         \begin{align*}
-        \vec{F}_c &= \class{hover-trigger minus-tooltip}{\bbox[4px,border:1px dashed #f92672;border-radius:4px,#3d292e]{\boldsymbol{-}}} \frac{mv^2}{R} \vec{u}_r \\[10pt]
-        &= - m \class{hover-trigger velocity-tooltip}{\bbox[4px,border:1px dashed #f92672;border-radius:8px,#3d292e]{\omega^2 R}} \vec{u}_r \quad [\mathrm{N}]
+        \vec{F}_c &= \mathTooltip{minus}{\boldsymbol{-}} \frac{mv^2}{R} \vec{u}_r \\[10pt]
+        &= - m \mathTooltip{velocity}{\omega^2 R} \vec{u}_r \quad [\mathrm{N}]
         \end{align*}`,
     step2_row3_Eq: String.raw`
         \begin{align*}
         F_e &= F_c \\[10pt]
-        |q| \class{hover-trigger field-tooltip}{\bbox[4px,border:1px dashed #f92672;border-radius:8px,#3d292e]{E}} &= m \omega^2 R \\[10pt]
+        |q| \mathTooltip{field}{E} &= m \omega^2 R \\[10pt]
         \frac{|q|\lambda}{2\pi \varepsilon_0 R} &= m \omega^2 R
         \end{align*}`,
     
@@ -115,7 +114,7 @@ const math = {
                         <div class="step-content">
                             <div class="step-text-col text-yellow-theme">
                                 <p>Calcula el flujo del campo Eléctrico ({math.step1_E_vec}) que atraviesa la superficie
-                                    gaussiana {math.step1_S} (de radio {math.step1_r} y longitud <span class="hover-trigger Lp-tooltip" style="border-bottom: 1px dashed var(--accent-red); cursor: help;">{math.step1_Lp}</span>).</p>
+                                    gaussiana {math.step1_S} (de radio {math.step1_r} y longitud <span class="hover-trigger Lp-tooltip">{math.step1_Lp}</span>).</p>
                             </div>
                             <div class="step-math-col">
                                 <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step1_flux_eq} />
@@ -135,7 +134,7 @@ const math = {
                         <!-- 3. Gauss Law Relation & Scalar Result -->
                         <div class="step-content">
                             <div class="step-text-col text-yellow-theme">
-                                <p>Según la <span class="hover-trigger" data-tooltip="tooltip-gauss" style="border-bottom: 1px dashed var(--accent-red); cursor: help;">Ley de Gauss</span>, podemos relacionar ambas expresiones y despejar {math.step1_gauss_E}.</p>
+                                <p>Según la <span class="hover-trigger tooltip-gauss">Ley de Gauss</span>, podemos relacionar ambas expresiones y despejar {math.step1_gauss_E}.</p>
                             </div>
                             <div class="step-math-col">
                                 <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step1_gauss_eq} />
@@ -299,84 +298,6 @@ const math = {
                 }
             });
         }
-    });
-
-    // Tooltip Logic
-    document.addEventListener('DOMContentLoaded', () => {
-        const tooltipOffset = 15;
-
-
-        function updatePosition(target, tooltipEl) {
-            const rect = target.getBoundingClientRect();
-            const scrollY = window.scrollY || window.pageYOffset;
-            const scrollX = window.scrollX || window.pageXOffset;
-
-            let top = rect.top + scrollY - tooltipEl.offsetHeight - tooltipOffset;
-            let left = rect.left + scrollX + (rect.width / 2) - (tooltipEl.offsetWidth / 2);
-
-            if (left < 10) left = 10;
-            if (left + tooltipEl.offsetWidth > window.innerWidth - 10) {
-                left = window.innerWidth - tooltipEl.offsetWidth - 10;
-            }
-            if (top < scrollY) {
-                top = rect.bottom + scrollY + tooltipOffset;
-            }
-
-            tooltipEl.style.top = `${top}px`;
-            tooltipEl.style.left = `${left}px`;
-        }
-
-        function showTooltip(target, tooltipId) {
-            const tooltip = document.getElementById(tooltipId);
-            if (!tooltip) return;
-
-            tooltip.style.display = 'block';
-            updatePosition(target, tooltip);
-
-            if (window.MathJax && window.MathJax.typesetPromise) {
-                MathJax.typesetPromise([tooltip]).catch(() => { });
-            }
-        }
-
-        function hideTooltip(tooltipId) {
-            const tooltip = document.getElementById(tooltipId);
-            if (tooltip) tooltip.style.display = 'none';
-        }
-
-        document.body.addEventListener('mouseover', (e) => {
-            const trigger = e.target.closest('.hover-trigger');
-            if (!trigger) return;
-
-            let tooltipId = trigger.dataset.tooltip;
-            if (trigger.classList.contains('radial-tooltip')) {
-                tooltipId = 'tooltip-radial';
-            }
-            if (trigger.classList.contains('Lp-tooltip')) {
-                tooltipId = 'tooltip-Lp';
-            }
-            if (trigger.classList.contains('minus-tooltip')) {
-                tooltipId = 'tooltip-minus';
-            }
-            if (trigger.classList.contains('velocity-tooltip')) {
-                tooltipId = 'tooltip-velocity';
-            }
-            if (trigger.classList.contains('field-tooltip')) {
-                tooltipId = 'tooltip-field';
-            }
-
-            if (tooltipId) {
-                showTooltip(trigger, tooltipId);
-                trigger._activeTooltipId = tooltipId;
-            }
-        });
-
-        document.body.addEventListener('mouseout', (e) => {
-            const trigger = e.target.closest('.hover-trigger');
-            if (!trigger || !trigger._activeTooltipId) return;
-
-            hideTooltip(trigger._activeTooltipId);
-            trigger._activeTooltipId = null;
-        });
     });
 
     // Modal Logic

@@ -29,7 +29,8 @@ const { title } = Astro.props;
                     displayMath: [['$$', '$$'], ['\\[', '\\]']],
                     packages: {'[+]': ['ams', 'html', 'physics']},
                     macros: {
-                        unit: ["\\mathrm{#1}", 1]
+                        unit: ["\\mathrm{#1}", 1],
+                        mathTooltip: ["\\class{hover-trigger #1-tooltip}{\\bbox[4px, border: 1px dashed var(--accent-red); border-radius: 8px; background-color: var(--tooltip-bg)]{#2}}", 2]
                     }
                 },
                 loader: {
@@ -67,5 +68,90 @@ const { title } = Astro.props;
 	</head>
 	<body>
 		<slot />
+
+        <!-- Global Static Tooltips Controller -->
+        <script is:inline>
+            document.addEventListener('DOMContentLoaded', () => {
+                const tooltipOffset = 15;
+
+                function updatePosition(target, tooltipEl) {
+                    const rect = target.getBoundingClientRect();
+                    const scrollY = window.scrollY || window.pageYOffset;
+                    const scrollX = window.scrollX || window.pageXOffset;
+
+                    let top = rect.top + scrollY - tooltipEl.offsetHeight - tooltipOffset;
+                    let left = rect.left + scrollX + (rect.width / 2) - (tooltipEl.offsetWidth / 2);
+
+                    if (left < 10) left = 10;
+                    if (left + tooltipEl.offsetWidth > window.innerWidth - 10) {
+                        left = window.innerWidth - tooltipEl.offsetWidth - 10;
+                    }
+                    if (top < scrollY) {
+                        top = rect.bottom + scrollY + tooltipOffset;
+                    }
+
+                    tooltipEl.style.top = `${top}px`;
+                    tooltipEl.style.left = `${left}px`;
+                }
+
+                function showTooltip(target, tooltipId) {
+                    const tooltip = document.getElementById(tooltipId);
+                    if (!tooltip) return;
+
+                    tooltip.style.display = 'block';
+                    updatePosition(target, tooltip);
+
+                    if (window.MathJax && window.MathJax.typesetPromise) {
+                        MathJax.typesetPromise([tooltip]).catch(() => { });
+                    }
+                }
+
+                function hideTooltip(tooltipId) {
+                    const tooltip = document.getElementById(tooltipId);
+                    if (tooltip) tooltip.style.display = 'none';
+                }
+
+                document.body.addEventListener('mouseover', (e) => {
+                    const trigger = e.target.closest('.hover-trigger');
+                    if (!trigger) return;
+
+                    let tooltipId = trigger.dataset.tooltip;
+                    
+                    // Búsqueda dinámica del tooltip por clase (soporte nativo y legacy)
+                    if (!tooltipId) {
+                        for (const className of trigger.classList) {
+                            // 1. Intentar ID directo (ej. tooltip-inf si se usa la clase tooltip-inf)
+                            let el = document.getElementById(className);
+                            if (el && el.classList.contains('tooltip-box')) {
+                                tooltipId = className;
+                                break;
+                            }
+                            // 2. Intentar formato legacy (ej. radial-tooltip -> tooltip-radial)
+                            if (className.endsWith('-tooltip')) {
+                                const legacyId = 'tooltip-' + className.substring(0, className.length - 8);
+                                el = document.getElementById(legacyId);
+                                if (el && el.classList.contains('tooltip-box')) {
+                                    tooltipId = legacyId;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (tooltipId) {
+                        showTooltip(trigger, tooltipId);
+                        trigger._activeTooltipId = tooltipId;
+                    }
+                });
+
+                document.body.addEventListener('mouseout', (e) => {
+                    const trigger = e.target.closest('.hover-trigger');
+                    if (!trigger || !trigger._activeTooltipId) return;
+
+                    hideTooltip(trigger._activeTooltipId);
+                    trigger._activeTooltipId = null;
+                });
+            });
+        </script>
 	</body>
 </html>

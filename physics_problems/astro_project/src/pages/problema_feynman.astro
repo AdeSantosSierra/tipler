@@ -15,10 +15,12 @@ const math = {
     enunciadoC: String.raw`Comprueba tu respuesta del apartado (a) en el límite $r \ll L_1 + L_2$ mediante la comparación del campo eléctrico derivado del potencial ($\vec{E} = -\nabla \Phi$) con el campo derivado usando la Ley de Gauss para una línea infinita.`,
     
     // Paso 1: Relación Potencial-Campo (Texto Secuencial)
-    p1_text1: String.raw`La diferencia de potencial entre dos puntos $(a)$ y $(b)$ se define como:`,
-    p1_eq1: String.raw`\Phi(b) - \Phi(a) = -\int_a^b \vec{E} \cdot d\vec{l}`,
-    p1_text2: String.raw`Independientemente de la trayectoria seguida entre $a$ y $b$, pues el campo eléctrico es conservativo, donde $\vec{E}$ se denomina campo eléctrico. Dicho potencial puede verse también como el trabajo por unidad de carga. Aplicado a nuestro problema, dada la geometría, $\Phi(P)$ puede calcularse como la integral entre infinito y $P$ de $\vec{E} \cdot d\vec{r}$, asumiendo que $\Phi(\infty) = 0$:`,
-    p1_eq2: String.raw`\Phi(P) = -\int_{\infty}^P \vec{E} \cdot d\vec{r}`,
+    p1_text1: String.raw`La diferencia de potencial entre dos puntos $a$ y $b$ se define como:`,
+    p1_eq1: String.raw`\mathTooltip{inf}{\Phi(b) - \Phi(a)} = -\int_a^b \vec{E} \cdot d\vec{l}`,
+    p1_text2: String.raw`independientemente de la trayectoria seguida entre $a$ y $b$, puesto que el campo eléctrico es conservativo (siendo $\vec{E}$ el campo eléctrico). 
+    Aplicado a nuestro problema, $\Phi(P)$ puede calcularse como:`,
+    p1_eq2: String.raw`\Phi(P) = \Phi(P) - \Phi(\infty) = -\int_{\infty}^P \vec{E} \cdot d\vec{r}`,
+    p1_text2b: String.raw`tomando como referencia <span class="hover-trigger tooltip-inf">$\Phi(\infty) = 0$</span>.`,
     p1_text3: String.raw`Como el campo $\vec{E}$ en electrostática es conservativo, el cálculo del potencial no depende del camino escogido, luego puedo elegir la trayectoria que me resulte más cómoda (en este caso a lo largo del eje $X$ únicamente). Eso significa que $d\vec{r} = (dx, 0, 0)$ y por lo tanto solo necesito calcular el campo eléctrico en la dirección horizontal:`,
     p1_eq3: String.raw`\begin{aligned} d\vec{r} &= dx \, \vec{\imath} \\ \Phi(P) &= -\int_{\infty}^r E_x \, dx \end{aligned}`,
 
@@ -39,7 +41,13 @@ const math = {
     matrixTrig: String.raw`\begin{matrix} \cos \alpha_1 = \frac{r}{d_1} & \cos \alpha_2 = \frac{r}{d_2} \\ \sin \alpha_1 = \frac{l_1}{d_1} & \sin \alpha_2 = \frac{l_2}{d_2} \end{matrix}`,
     decomp_eqs: String.raw`\begin{aligned} \vec{E}_x &= \vec{E}_{1x} + \vec{E}_{2x} = (E_1 \cos \alpha_1 + E_2 \cos \alpha_2) \, \vec{\imath} \\ \vec{E}_y &= \vec{E}_{2y} - \vec{E}_{1y} = (E_2 \sin \alpha_2 - E_1 \sin \alpha_1) \, \vec{\jmath} \end{aligned}`,
 
-    // Paso 5: Integración
+    // Paso 5: Cálculo de la componente horizontal del campo eléctrico
+    p5_text1: String.raw`Una vez que tenemos las descomposiciones de los vectores campo eléctrico $\vec{E}_{1x}$ y $\vec{E}_{2x}$, podemos empezar a calcular exactamente cuál es la contribución del campo eléctrico. Para ello, expresamos el diferencial de campo eléctrico de la componente horizontal del tramo inferior:`,
+    p5_eq1: String.raw`d\vec{E}_{1x} = \frac{1}{4\pi\varepsilon_0} \frac{dq_1}{d_1^2} \cos\alpha_1 \vec{\imath} = \frac{1}{4\pi\varepsilon_0} \frac{\lambda dl_1}{d_1^2} \frac{r}{d_1} \vec{\imath} \quad \left[\frac{\unit{N}}{\unit{C}}\right]`,
+    p5_text2: String.raw`Sustituyendo se obtiene que:`,
+    p5_eq2: String.raw`\vec{E}_{1x} = \frac{1}{4\pi\varepsilon_0} \int_{-L_1}^{0} \frac{r \lambda \, dl_1}{(l_1^2 + r^2)^{3/2}} \, \vec{\imath} \quad \left[\frac{\unit{N}}{\unit{C}}\right] \qquad (1)`,
+
+    // Paso 6: Integración
     integral_setup: String.raw`\Phi = \frac{\lambda}{4\pi\varepsilon_0} \int_{-L_1}^{L_2} \frac{dy}{\sqrt{r^2 + y^2}}`,
     integral_result: String.raw`\Phi = \frac{\lambda}{4\pi\varepsilon_0} \left[ \ln(y + \sqrt{r^2 + y^2}) \right]_{-L_1}^{L_2}`,
 };
@@ -75,6 +83,8 @@ const math = {
                 <div style="margin: 1.5rem 0; text-align: center; font-size: 1.2em;">
                     <span set:html={`$$ ${math.p1_eq2} $$`} />
                 </div>
+
+                <p set:html={math.p1_text2b} />
 
                 <p set:html={math.p1_text3} />
                 <div style="margin: 1.5rem 0; text-align: center; font-size: 1.2em;">
@@ -139,8 +149,32 @@ const math = {
             </div>
         </StepBox>
 
-        <!-- Paso 5: Integración -->
-        <StepBox label="Paso 5: Cálculo del Potencial Total">
+        <!-- Paso 5: Cálculo de la componente horizontal del campo eléctrico -->
+        <StepBox label="Paso 5: Cálculo de la componente horizontal del campo eléctrico" vizSrc="/feynman_viz_l1.html" vizId="viz-feynman-l1-field">
+            <div class="step-content-wrapper">
+                <div class="step-text-math-col" style="width: 100%;">
+                    <div class="paso2-section">
+                        <div class="paso2-comment">
+                            <p set:html={math.p5_text1}></p>
+                        </div>
+                        <div class="paso2-math">
+                            <div style="font-size: 1.15em; color: white;" set:html={`$$ ${math.p5_eq1} $$`} />
+                        </div>
+                    </div>
+                    <div class="paso2-section" style="border-bottom: none;">
+                        <div class="paso2-comment">
+                            <p set:html={math.p5_text2}></p>
+                        </div>
+                        <div class="paso2-math">
+                            <div style="font-size: 1.15em; color: #a6e22e;" set:html={`$$ ${math.p5_eq2} $$`} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </StepBox>
+
+        <!-- Paso 6: Integración -->
+        <StepBox label="Paso 6: Cálculo del Potencial Total">
             <div class="step-content-wrapper">
                 <div class="step-text-math-col" style="width: 100%;">
                     <div class="paso2-section">
@@ -182,4 +216,7 @@ const math = {
             &larr; Volver al Problema Anterior
         </a>
     </div>
+
+    <!-- Tooltips -->
+    <div id="tooltip-inf" class="tooltip-box">tool tip</div>
 </PhysicsProblemTemplate>

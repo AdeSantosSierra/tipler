@@ -36,15 +36,13 @@ const math = {
         \end{align*}`,
     step1_final_eq: String.raw`
         \begin{align*}
-        \vec{E} &= \frac{\lambda}{2\pi \varepsilon_0} \class{hover-trigger radial-tooltip}{\bbox[4px,border:1px dashed
-        #f92672;border-radius:8px,#3d292e]{\frac{\vec{u}_r}{r}}} \quad
+        \vec{E} &= \frac{\lambda}{2\pi \varepsilon_0} \mathTooltip{radial}{\frac{\vec{u}_r}{r}} \quad
         \left[\frac{\unit{N}}{\unit{C}}\right]
         \end{align*}`,
 
     step2_vec_eq: String.raw`
         \begin{align*}
-        \vec{E} &= \frac{\lambda}{2\pi \varepsilon_0} \class{hover-trigger step2-j-tooltip}{\bbox[4px,border:1px dashed
-        #f92672;border-radius:8px,#3d292e]{\frac{\vec{\jmath}}{y}}} \quad
+        \vec{E} &= \frac{\lambda}{2\pi \varepsilon_0} \mathTooltip{step2-j}{\frac{\vec{\jmath}}{y}} \quad
         \left[\frac{\unit{N}}{\unit{C}}\right]
         \end{align*}`,
 
@@ -64,8 +62,7 @@ const math = {
     step3_integral_eq: String.raw`
         \begin{align*}
         \vec{F} &= \int_{d}^{d+L} d\vec{F} = \int_{d}^{d+L} \left( \frac{Q\lambda}{2\pi \varepsilon_0 L} \right) \frac{dy}{y} \vec{\jmath} \\[10pt]
-        &= \left( \frac{Q\lambda}{2\pi \varepsilon_0 L} \right) \vec{\jmath} \class{hover-trigger integral-tooltip}{\bbox[4px,border:1px dashed
-        #f92672;border-radius:8px,#3d292e]{\int_{d}^{d+L} \frac{dy}{y}}} \\[10pt]
+        &= \left( \frac{Q\lambda}{2\pi \varepsilon_0 L} \right) \vec{\jmath} \mathTooltip{integral}{\int_{d}^{d+L} \frac{dy}{y}} \\[10pt]
         &= \left( \frac{Q\lambda}{2\pi \varepsilon_0 L} \right) \ln\left( \frac{d+L}{d} \right) \vec{\jmath} \quad \left[ \unit{N} \right]
         \end{align*}`,
     gauss_tooltip_eq: String.raw`$$ \oint \vec{E} \cdot d\vec{S} = \frac{Q_{\text{enc}}}{\varepsilon_0} $$`,
@@ -119,7 +116,7 @@ const math = {
                 <div class="step-content">
                     <div class="step-text-col text-yellow-theme">
                         <p>Calcula el flujo del campo Eléctrico ({math.step1_E}) que atraviesa la superficie
-                            gaussiana {math.step1_S} (de radio {math.step1_r} y longitud <span class="hover-trigger Lp-tooltip" style="border-bottom: 1px dashed var(--accent-red); cursor: help;">{math.step1_Lp}</span>).</p>
+                            gaussiana {math.step1_S} (de radio {math.step1_r} y longitud <span class="hover-trigger Lp-tooltip">{math.step1_Lp}</span>).</p>
                     </div>
                     <div class="step-math-col">
                         <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step1_flux_eq} />
@@ -139,7 +136,7 @@ const math = {
                 <!-- 3. Gauss Law Relation & Scalar Result -->
                 <div class="step-content">
                     <div class="step-text-col text-yellow-theme">
-                        <p>Según la <span class="hover-trigger" data-tooltip="tooltip-gauss" style="border-bottom: 1px dashed var(--accent-red); cursor: help;">Ley de Gauss</span>, podemos relacionar ambas expresiones y despejar {math.step1_gauss_E}.</p>
+                        <p>Según la <span class="hover-trigger tooltip-gauss">Ley de Gauss</span>, podemos relacionar ambas expresiones y despejar {math.step1_gauss_E}.</p>
                     </div>
                     <div class="step-math-col">
                         <div style="font-size: 1.1em; overflow-x: auto;" set:html={math.step1_gauss_eq} />
@@ -308,86 +305,6 @@ const math = {
 
     <!-- Interactive Scripts -->
     <script is:inline>
-        // Tooltip Logic
-        document.addEventListener('DOMContentLoaded', () => {
-            const tooltipOffset = 15;
-
-            function updatePosition(target, tooltipEl) {
-                const rect = target.getBoundingClientRect();
-                const scrollY = window.scrollY || window.pageYOffset;
-                const scrollX = window.scrollX || window.pageXOffset;
-
-                let top = rect.top + scrollY - tooltipEl.offsetHeight - tooltipOffset;
-                let left = rect.left + scrollX + (rect.width / 2) - (tooltipEl.offsetWidth / 2);
-
-                if (left < 10) left = 10;
-                if (left + tooltipEl.offsetWidth > window.innerWidth - 10) {
-                    left = window.innerWidth - tooltipEl.offsetWidth - 10;
-                }
-                if (top < scrollY) {
-                    top = rect.bottom + scrollY + tooltipOffset;
-                }
-
-                tooltipEl.style.top = `${top}px`;
-                tooltipEl.style.left = `${left}px`;
-            }
-
-            function showTooltip(target, tooltipId) {
-                const tooltip = document.getElementById(tooltipId);
-                if (!tooltip) return;
-
-                tooltip.style.display = 'block';
-                updatePosition(target, tooltip);
-
-                if (window.MathJax && window.MathJax.typesetPromise) {
-                    MathJax.typesetPromise([tooltip]).catch(() => { });
-                }
-            }
-
-            function hideTooltip(tooltipId) {
-                const tooltip = document.getElementById(tooltipId);
-                if (tooltip) tooltip.style.display = 'none';
-            }
-
-            document.body.addEventListener('mouseover', (e) => {
-                const trigger = e.target.closest('.hover-trigger');
-                if (!trigger) return;
-
-                let tooltipId = trigger.dataset.tooltip;
-                if (trigger.classList.contains('step1-vector-tooltip')) {
-                    tooltipId = 'tooltip-step1-vector';
-                }
-                if (trigger.classList.contains('radial-tooltip')) {
-                    tooltipId = 'tooltip-radial';
-                }
-                if (trigger.classList.contains('step2-j-tooltip')) {
-                    tooltipId = 'tooltip-step2-j';
-                }
-                if (trigger.classList.contains('integral-tooltip')) {
-                    tooltipId = 'tooltip-integral';
-                }
-                if (trigger.classList.contains('Lp-tooltip')) {
-                    tooltipId = 'tooltip-Lp';
-                }
-                if (trigger.classList.contains('step2-vector-tooltip')) {
-                    tooltipId = 'tooltip-step2-vector';
-                }
-
-                if (tooltipId) {
-                    showTooltip(trigger, tooltipId);
-                    trigger._activeTooltipId = tooltipId;
-                }
-            });
-
-            document.body.addEventListener('mouseout', (e) => {
-                const trigger = e.target.closest('.hover-trigger');
-                if (!trigger || !trigger._activeTooltipId) return;
-
-                hideTooltip(trigger._activeTooltipId);
-                trigger._activeTooltipId = null;
-            });
-        });
-
         // Modal Logic
         document.addEventListener('DOMContentLoaded', () => {
             const modal = document.getElementById('math-modal');
