@@ -46,6 +46,10 @@ const math = {
     p5_eq1: String.raw`d\vec{E}_{1x} = \frac{1}{4\pi\varepsilon_0} \frac{dq_1}{d_1^2} \cos\alpha_1 \vec{\imath} = \frac{1}{4\pi\varepsilon_0} \frac{\lambda dl_1}{d_1^2} \frac{r}{d_1} \vec{\imath} \quad \left[\frac{\unit{N}}{\unit{C}}\right]`,
     p5_text2: String.raw`Sustituyendo se obtiene que:`,
     p5_eq2: String.raw`\vec{E}_{1x} = \frac{1}{4\pi\varepsilon_0} \int_{-L_1}^{0} \frac{r \lambda \, dl_1}{(l_1^2 + r^2)^{3/2}} \, \vec{\imath} \quad \left[\frac{\unit{N}}{\unit{C}}\right] \qquad (1)`,
+    p5_text3: String.raw`De manera similar para $\vec{E}_{2x}$ tenemos que:`,
+    p5_eq3: String.raw`\vec{E}_{2x} = \frac{1}{4\pi\varepsilon_0} \int_{0}^{L_2} \frac{r \lambda \, dl_2}{(l_2^2 + r^2)^{3/2}} \, \vec{\imath} \quad \left[\frac{\unit{N}}{\unit{C}}\right] \qquad (2)`,
+    p5_text4: String.raw`Sumando ambas contribuciones horizontales tenemos que:`,
+    p5_eq4: String.raw`\begin{aligned} |\vec{E}_x| &= |\vec{E}_{1x}| + |\vec{E}_{2x}| \\ &= \frac{1}{4\pi\varepsilon_0} \int_{-L_1}^{L_2} \frac{r \lambda \, dl}{(l^2 + r^2)^{3/2}} \quad \left[\frac{\unit{N}}{\unit{C}}\right] \end{aligned}`,
 
     // Paso 6: Integración
     integral_setup: String.raw`\Phi = \frac{\lambda}{4\pi\varepsilon_0} \int_{-L_1}^{L_2} \frac{dy}{\sqrt{r^2 + y^2}}`,
@@ -161,12 +165,28 @@ const math = {
                             <div style="font-size: 1.15em; color: white;" set:html={`$$ ${math.p5_eq1} $$`} />
                         </div>
                     </div>
-                    <div class="paso2-section" style="border-bottom: none;">
+                    <div class="paso2-section">
                         <div class="paso2-comment">
                             <p set:html={math.p5_text2}></p>
                         </div>
                         <div class="paso2-math">
-                            <div style="font-size: 1.15em; color: #a6e22e;" set:html={`$$ ${math.p5_eq2} $$`} />
+                            <div style="font-size: 1.15em; color: white;" set:html={`$$ ${math.p5_eq2} $$`} />
+                        </div>
+                    </div>
+                    <div class="paso2-section">
+                        <div class="paso2-comment">
+                            <p set:html={math.p5_text3}></p>
+                        </div>
+                        <div class="paso2-math">
+                            <div style="font-size: 1.15em; color: white;" set:html={`$$ ${math.p5_eq3} $$`} />
+                        </div>
+                    </div>
+                    <div class="paso2-section" style="border-bottom: none;">
+                        <div class="paso2-comment">
+                            <p set:html={math.p5_text4}></p>
+                        </div>
+                        <div class="paso2-math">
+                            <div style="font-size: 1.15em; color: #a6e22e;" set:html={`$$ ${math.p5_eq4} $$`} />
                         </div>
                     </div>
                 </div>
