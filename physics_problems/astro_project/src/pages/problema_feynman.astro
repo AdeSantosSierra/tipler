@@ -87,16 +87,29 @@ const math = {
         <!-- Paso 1: Relación Potencial-Campo (UNA COLUMNA) -->
         <StepBox label="Paso 1: Relación entre Potencial y Campo">
             <div class="step-onecolumn">
-                <p set:html={math.p1_text1} />
-                <div class="step-math-centered" set:html={`$$ ${math.p1_eq1} $$`} />
+                <p>La diferencia de potencial entre dos puntos $a$ y $b$ se define como:</p>
+                <div class="step-math-centered">
+                    {String.raw`$$ \mathTooltip{inf}{\Phi(b) - \Phi(a)} = -\int_a^b \vec{E} \cdot d\vec{l} $$`}
+                </div>
                 
-                <p set:html={math.p1_text2} />
-                <div class="step-math-centered" set:html={`$$ ${math.p1_eq2} $$`} />
+                <p>
+                    {String.raw`independientemente de la trayectoria seguida entre $a$ y $b$, puesto que el campo eléctrico es conservativo (siendo $\vec{E}$ el campo eléctrico). 
+                    Aplicado a nuestro problema, $\Phi(P)$ puede calcularse como:`}
+                </p>
+                <div class="step-math-centered">
+                    {String.raw`$$ \Phi(P) = \Phi(P) - \Phi(\infty) = -\int_{\infty}^P \vec{E} \cdot d\vec{r} $$`}
+                </div>
 
-                <p set:html={math.p1_text2b} />
+                <p>
+                    {String.raw`tomando como referencia <span class="hover-trigger" data-tooltip="tooltip-inf">$\Phi(\infty) = 0$</span>.`}
+                </p>
 
-                <p set:html={math.p1_text3} />
-                <div class="step-math-centered" set:html={`$$ ${math.p1_eq3} $$`} />
+                <p>
+                    {String.raw`Como el campo $\vec{E}$ en electrostática es conservativo, el cálculo del potencial no depende del camino escogido, luego puedo elegir la trayectoria que me resulte más cómoda (en este caso a lo largo del eje $X$ únicamente). Eso significa que $d\vec{r} = (dx, 0, 0)$ y por lo tanto solo necesito calcular el campo eléctrico en la dirección horizontal:`}
+                </p>
+                <div class="step-math-centered">
+                    {String.raw`$$ \begin{aligned} d\vec{r} &= dx \, \vec{\imath} \\ \Phi(P) &= -\int_{\infty}^r E_x \, dx \end{aligned} $$`}
+                </div>
             </div>
         </StepBox>
 
