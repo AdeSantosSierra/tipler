@@ -171,7 +171,7 @@ const apartados = [
                 <div class="step-math">
                     {String.raw`$$ \begin{aligned}
                     r^2 &= \mathTooltip{d2}{d_2^2 - L_2^2} = (d_2 - L_2)(d_2 + L_2) \\[5pt]
-                    &= \mathTooltip{d1}{d_1^2 - L_1^2} = (d_1 - L_1)(d_1 + L_1)
+                    r^2 &= \mathTooltip{d1}{d_1^2 - L_1^2} = (d_1 - L_1)(d_1 + L_1)
                     \end{aligned} $$`}
                 </div>
             </div>
@@ -181,7 +181,12 @@ const apartados = [
                     <p>Continuando el proceso y sustituyendo las relaciones anteriores, obtenemos que:</p>
                 </div>
                 <div class="step-math">
-                    {String.raw`$$ \int_{\infty}^{r} E_x \, dx = \frac{\lambda}{4\pi\varepsilon_0} \frac{1}{2} \ln \left[ \left( \frac{d_2 - L_2}{d_2 + L_2} \right) \left( \frac{d_1 - L_1}{d_1 + L_1} \right) \right] $$`}
+                    {String.raw`$$ \begin{aligned}
+                    \int_{\infty}^{r} E_x \, dx &= \frac{\lambda}{4\pi\varepsilon_0} \frac{1}{2} \ln \left[ \left( \frac{d_2 - L_2}{d_2 + L_2} \right) \left( \frac{d_1 - L_1}{d_1 + L_1} \right) \right] \\[15pt]
+                    &= \frac{\lambda}{4\pi\varepsilon_0} \frac{1}{2} \ln \left[ \left( \frac{d_1 - L_1}{d_2 + L_2} \right)^2 \right] \\[15pt]
+                    &= \frac{\lambda}{4\pi\varepsilon_0} \ln \left( \frac{d_1 - L_1}{d_2 + L_2} \right) \\[15pt]
+                    &= \frac{\lambda}{4\pi\varepsilon_0} \ln \left( \frac{d_2 - L_2}{d_1 + L_1} \right)
+                    \end{aligned} $$`}
                 </div>
             </div>
         </StepBox>
