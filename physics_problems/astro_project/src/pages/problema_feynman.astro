@@ -202,9 +202,41 @@ const apartados = [
     </div>
 
     <div id="apartado-b" class="apartado-section">
-        <div class="step-content">
-            <p style="color: white; padding: 2rem;">Contenido del análisis de campo lejano ($r \gg L_1 + L_2$)</p>
-        </div>
+        <!-- Paso 1: Comportamiento Esperado -->
+        <StepBox label="Paso 1: Comportamiento Esperado a Grandes Distancias">
+            <div class="step-onecolumn" style="border-bottom: none;">
+                <p>Si nos alejamos mucho, es de esperar que el potencial tienda al generado por una partícula puntual:</p>
+                <div class="step-math-centered">
+                    {String.raw`$$ \Phi = \left[ \frac{Q}{4\pi\varepsilon_0} \frac{1}{r} \right] \quad \unit{V} $$`}
+                </div>
+            </div>
+        </StepBox>
+
+        <!-- Paso 2: Herramienta Matemática - Serie de Taylor -->
+        <StepBox label="Paso 2: Herramienta Matemática - Serie de Taylor">
+            <div class="step-onecolumn" style="border-bottom: none;">
+                <p>Para ello, y puesto que tenemos logaritmos en las ecuaciones que hemos obtenido del potencial, hay que saber la aproximación en serie de Taylor del logaritmo de una suma:</p>
+                <div class="step-math-centered">
+                    {String.raw`$$ \ln(1 + x) = x - \frac{x^2}{2} + \frac{x^3}{3} - \frac{x^4}{4} + \dots $$`}
+                </div>
+                <p>siempre que $x$ sea pequeño.</p>
+            </div>
+        </StepBox>
+
+        <!-- Paso 3: Aproximación del Potencial -->
+        <StepBox label="Paso 3: Aproximación del Potencial">
+            <div class="step-twocolumns" style="border-bottom: none;">
+                <div class="step-comment">
+                    <p>En nuestro caso tenemos que:</p>
+                </div>
+                <div class="step-math">
+                    {String.raw`$$ \begin{aligned}
+                    \Phi(P) &= \frac{\lambda}{4\pi\varepsilon_0} \ln \left( \frac{\sqrt{L_2^2 + r^2} + L_2}{\sqrt{L_1^2 + r^2} - L_1} \right) \\[15pt]
+                    &\approx \frac{\lambda}{4\pi\varepsilon_0} \ln \left( \frac{1 + L_2/r}{1 - L_1/r} \right) \quad (\text{para } r \gg L_1, L_2)
+                    \end{aligned} $$`}
+                </div>
+            </div>
+        </StepBox>
     </div>
 
     <div id="apartado-c" class="apartado-section">
