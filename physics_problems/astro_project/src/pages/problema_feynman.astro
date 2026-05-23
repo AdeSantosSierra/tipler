@@ -151,7 +151,7 @@ const apartados = [
                     {String.raw`$$ \Phi(B) - \Phi(A) = \Phi(P) = -\int_{\infty}^{r} \vec{E} \cdot d\vec{r} = -\int_{\infty}^{r} E_x \, dx $$`}
                 </div>
             </div>
-            <div class="step-twocolumns" style="border-bottom: none;">
+            <div class="step-twocolumns">
                 <div class="step-comment">
                     <p>Calculamos o resolvemos la integral por un lado, y entonces tenemos que:</p>
                 </div>
@@ -160,6 +160,33 @@ const apartados = [
                     \int_{\infty}^{r} E_x \, dx &= \int_{\infty}^{r} \frac{\lambda}{4\pi\varepsilon_0} \frac{1}{r} \left( \frac{L_2}{\sqrt{L_2^2 + r^2}} + \frac{L_1}{\sqrt{L_1^2 + r^2}} \right) dr \\[15pt]
                     &= \frac{\lambda}{4\pi\varepsilon_0} \left[ \frac{1}{2} \ln \left( \frac{\sqrt{L_2^2 + r^2} - L_2}{\sqrt{L_2^2 + r^2} + L_2} \right) + \frac{1}{2} \ln \left( \frac{\sqrt{L_1^2 + r^2} - L_1}{\sqrt{L_1^2 + r^2} + L_1} \right) \right]
                     \end{aligned} $$`}
+                </div>
+            </div>
+            
+            <div class="step-twocolumns" style="border-bottom: none;">
+                <div class="step-comment">
+                    <p>Tenemos las siguientes relaciones entre $r$, $L_1$ y $L_2$:</p>
+                    <div style="display: flex; gap: 2rem; margin-top: 1rem; justify-content: flex-start;">
+                        <!-- Triángulo 2 -->
+                        <svg viewBox="0 0 110 95" width="110" height="95" style="overflow: visible;">
+                            <path d="M 20 70 L 100 70 L 20 20 Z" fill="rgba(166, 226, 46, 0.05)" stroke="var(--accent-green)" stroke-width="2" />
+                            <path d="M 20 60 L 30 60 L 30 70" fill="none" stroke="var(--accent-green)" stroke-width="1" opacity="0.6" />
+                            <text x="12" y="48" fill="white" font-size="13" text-anchor="end">L₂</text>
+                            <text x="60" y="88" fill="white" font-size="13" text-anchor="middle">r</text>
+                            <text x="65" y="40" fill="var(--accent-green)" font-size="13" text-anchor="start">d₂</text>
+                        </svg>
+                        <!-- Triángulo 1 -->
+                        <svg viewBox="0 0 110 95" width="110" height="95" style="overflow: visible;">
+                            <path d="M 20 70 L 100 70 L 20 20 Z" fill="rgba(166, 226, 46, 0.05)" stroke="var(--accent-green)" stroke-width="2" />
+                            <path d="M 20 60 L 30 60 L 30 70" fill="none" stroke="var(--accent-green)" stroke-width="1" opacity="0.6" />
+                            <text x="12" y="48" fill="white" font-size="13" text-anchor="end">L₁</text>
+                            <text x="60" y="88" fill="white" font-size="13" text-anchor="middle">r</text>
+                            <text x="65" y="40" fill="var(--accent-green)" font-size="13" text-anchor="start">d₁</text>
+                        </svg>
+                    </div>
+                </div>
+                <div class="step-math">
+                    {String.raw`$$ r^2 = d_2^2 - L_2^2 = d_1^2 - L_1^2 $$`}
                 </div>
             </div>
         </StepBox>
