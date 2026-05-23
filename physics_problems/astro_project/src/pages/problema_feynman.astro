@@ -159,17 +159,26 @@ const apartados = [
                     {String.raw`$$ \begin{aligned}
                     \int_{\infty}^{r} E_x \, dx &= \int_{\infty}^{r} \frac{\lambda}{4\pi\varepsilon_0} \frac{1}{r} \left( \frac{L_2}{\sqrt{L_2^2 + r^2}} + \frac{L_1}{\sqrt{L_1^2 + r^2}} \right) dr \\[15pt]
                     &= \frac{\lambda}{4\pi\varepsilon_0} \left[ \frac{1}{2} \ln \left( \frac{\sqrt{L_2^2 + r^2} - L_2}{\sqrt{L_2^2 + r^2} + L_2} \right) + \frac{1}{2} \ln \left( \frac{\sqrt{L_1^2 + r^2} - L_1}{\sqrt{L_1^2 + r^2} + L_1} \right) \right] \\[15pt]
-                    &= \frac{\lambda}{4\pi\varepsilon_0} \frac{1}{2} \ln \left[ \left( \frac{\sqrt{L_2^2 + r^2} - L_2}{\sqrt{L_2^2 + r^2} + L_2} \right) \left( \frac{\sqrt{L_1^2 + r^2} - L_1}{\sqrt{L_1^2 + r^2} + L_1} \right) \right]
+                    &= \frac{\lambda}{4\pi\varepsilon_0} \frac{1}{2} \ln \left[ \frac{\sqrt{L_2^2 + r^2} - L_2}{\sqrt{L_2^2 + r^2} + L_2} \frac{\sqrt{L_1^2 + r^2} - L_1}{\sqrt{L_1^2 + r^2} + L_1} \right]
                     \end{aligned} $$`}
                 </div>
             </div>
             
-            <div class="step-twocolumns" style="border-bottom: none;">
+            <div class="step-twocolumns">
                 <div class="step-comment">
                     <p>Tenemos las siguientes relaciones entre $r$, $L_1$ y $L_2$:</p>
                 </div>
                 <div class="step-math">
                     {String.raw`$$ r^2 = \mathTooltip{d2}{d_2^2 - L_2^2} = \mathTooltip{d1}{d_1^2 - L_1^2} $$`}
+                </div>
+            </div>
+            
+            <div class="step-twocolumns" style="border-bottom: none;">
+                <div class="step-comment">
+                    <p>Continuando el proceso y sustituyendo las relaciones anteriores, obtenemos que:</p>
+                </div>
+                <div class="step-math">
+                    {String.raw`$$ \int_{\infty}^{r} E_x \, dx = \frac{\lambda}{4\pi\varepsilon_0} \frac{1}{2} \ln \left[ \left( \frac{d_2 - L_2}{d_2 + L_2} \right) \left( \frac{d_1 - L_1}{d_1 + L_1} \right) \right] $$`}
                 </div>
             </div>
         </StepBox>
