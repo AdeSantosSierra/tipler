@@ -151,21 +151,15 @@ const apartados = [
                     {String.raw`$$ \Phi(B) - \Phi(A) = \Phi(P) = -\int_{\infty}^{r} \vec{E} \cdot d\vec{r} = -\int_{\infty}^{r} E_x \, dx $$`}
                 </div>
             </div>
-            <div class="step-twocolumns">
-                <div class="step-comment">
-                    <p>Calculamos o resolvemos la integral por un lado, entonces tenemos que:</p>
-                </div>
-                <div class="step-math" style="color: #a6e22e;">
-                    {String.raw`$$ \Phi = \frac{\lambda}{4\pi\varepsilon_0} \int_{-L_1}^{L_2} \frac{dy}{\sqrt{r^2 + y^2}} $$`}
-                </div>
-            </div>
-            
             <div class="step-twocolumns" style="border-bottom: none;">
                 <div class="step-comment">
-                    <p>Aplicando la primitiva logarítmica y evaluando en los límites:</p>
+                    <p>Calculamos o resolvemos la integral por un lado, y entonces tenemos que:</p>
                 </div>
                 <div class="step-math">
-                    {String.raw`$$ \Phi = \frac{\lambda}{4\pi\varepsilon_0} \left[ \ln(y + \sqrt{r^2 + y^2}) \right]_{-L_1}^{L_2} $$`}
+                    {String.raw`$$ \begin{aligned}
+                    \int_{\infty}^{r} E_x \, dx &= \int_{\infty}^{r} \frac{\lambda}{4\pi\varepsilon_0} \frac{1}{r} \left( \frac{L_2}{\sqrt{L_2^2 + r^2}} + \frac{L_1}{\sqrt{L_1^2 + r^2}} \right) dr \\[15pt]
+                    &= \frac{\lambda}{4\pi\varepsilon_0} \left[ \frac{1}{2} \ln \left( \frac{\sqrt{L_2^2 + r^2} - L_2}{\sqrt{L_2^2 + r^2} + L_2} \right) + \frac{1}{2} \ln \left( \frac{\sqrt{L_1^2 + r^2} - L_1}{\sqrt{L_1^2 + r^2} + L_1} \right) \right]
+                    \end{aligned} $$`}
                 </div>
             </div>
         </StepBox>
