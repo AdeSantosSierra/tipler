@@ -182,7 +182,7 @@ const apartados = [
                 </div>
                 <div class="step-math">
                     {String.raw`$$ \begin{aligned}
-                    \int_{\infty}^{r} E_x \, dx &= \frac{\lambda}{4\pi\varepsilon_0} \frac{1}{2} \ln \left[ \left( \frac{d_2 - L_2}{d_2 + L_2} \right) \left( \frac{d_1 - L_1}{d_1 + L_1} \right) \right] \\[15pt]
+                    \int_{\infty}^{r} E_x \, dx &= \frac{\lambda}{4\pi\varepsilon_0} \frac{1}{2} \ln \left[ \mathTooltip{d12}{\left( \frac{d_2 - L_2}{d_2 + L_2} \right) \left( \frac{d_1 - L_1}{d_1 + L_1} \right)} \right] \\[15pt]
                     &= \frac{\lambda}{4\pi\varepsilon_0} \frac{1}{2} \ln \left[ \left( \frac{d_1 - L_1}{d_2 + L_2} \right)^2 \right] \\[15pt]
                     &= \frac{\lambda}{4\pi\varepsilon_0} \ln \left( \frac{d_1 - L_1}{d_2 + L_2} \right) = \frac{\lambda}{4\pi\varepsilon_0} \ln \left( \frac{d_2 - L_2}{d_1 + L_1} \right)
                     \end{aligned} $$`}
@@ -239,5 +239,10 @@ const apartados = [
             <text x="60" y="12" fill="white" font-size="13" text-anchor="middle">r</text>
             <text x="65" y="55" fill="var(--accent-green)" font-size="13" text-anchor="start">d₁</text>
         </svg>
+    </div>
+    <div id="tooltip-d12" class="tooltip-box" style="display: none; padding: 0.8rem 1.2rem; min-width: 140px;">
+        <div style="margin-bottom: 0.4rem; color: var(--accent-green); font-weight: bold;">Relaciones de d:</div>
+        <div style="margin-bottom: 0.4rem;">{String.raw`$d_2 = \sqrt{L_2^2 + r^2}$`}</div>
+        <div>{String.raw`$d_1 = \sqrt{L_1^2 + r^2}$`}</div>
     </div>
 </PhysicsProblemTemplate>
